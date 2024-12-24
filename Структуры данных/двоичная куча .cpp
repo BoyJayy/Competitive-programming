@@ -1,0 +1,57 @@
+public void buildHeap(int[] sourceArray)
+{
+    list = sourceArray.ToList();
+    for (int i = heapSize / 2; i >= 0; i--)
+    {
+        heapify(i);
+    }
+}
+public int getMax()
+{
+    int result = list[0];
+    list[0] = list[heapSize - 1];
+    list.RemoveAt(heapSize - 1);
+    return result;
+}
+public void heapify(int i)
+{
+    int leftChild;
+    int rightChild;
+    int largestChild;
+
+    for (; ; )
+    {
+        leftChild = 2 * i + 1;
+        rightChild = 2 * i + 2;
+        largestChild = i;
+
+        if (leftChild < heapSize && list[leftChild] > list[largestChild]) 
+        {
+            largestChild = leftChild;
+        }
+
+        if (rightChild < heapSize && list[rightChild] > list[largestChild])
+        {
+            largestChild = rightChild;
+        }
+
+        if (largestChild == i) 
+        {
+            break;
+        }
+
+        int temp = list[i];
+        list[i] = list[largestChild];
+        list[largestChild] = temp;
+        i = largestChild;
+    }
+}
+public void heapSort(int[] array)
+{
+    buildHeap(array);
+    for (int i = array.Length - 1; i >= 0; i--)
+    {
+        array[i] = getMax();
+        heapify(0);
+    }
+}
