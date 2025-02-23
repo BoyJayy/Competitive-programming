@@ -7,17 +7,15 @@ vector<vector<int>> computePrefixSum(const vector<vector<int>> &A) {
         for (int j = 0; j < m; j++) {
             P[i][j] = A[i][j];
             if (i > 0)
-                P[i][j] += P[i - 1][j];    // Добавляем сумму сверху
+                P[i][j] += P[i - 1][j];    
             if (j > 0)
-                P[i][j] += P[i][j - 1];    // Добавляем сумму слева
+                P[i][j] += P[i][j - 1];   
             if (i > 0 && j > 0)
-                P[i][j] -= P[i - 1][j - 1]; // Вычитаем перекрывающуюся область
+                P[i][j] -= P[i - 1][j - 1];
         }
     }
     return P;
 }
-
-// Функция для вычисления суммы подматрицы с координатами (x1, y1) - верхний левый угол и (x2, y2) - нижний правый угол
 int submatrixSum(const vector<vector<int>> &P, int x1, int y1, int x2, int y2) {
     int sum = P[x2][y2];
     if (x1 > 0)
