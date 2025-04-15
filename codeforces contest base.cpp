@@ -1,3 +1,4 @@
+
 ///////////////////////////MACRO///////////////////////////////////////
 #include <bits/stdc++.h>
 #define all(a) (a).begin(), (a).end()
@@ -92,6 +93,24 @@ void print2d(const vec<vec<T>> &vec) {
 }
 ///////////////////////////TEMPLATES///////////////////////////////////////
 ///////////////////////////FUNCS///////////////////////////////////////
+inline bool is_power_of_two(ll n){ return (n>0 && !(n&(n-1))); }
+inline bool is_bit_set(ll n,ll k){ return (n & (1LL<<k))!=0; }
+inline ll set_bit(ll n,ll k){ return n | (1LL<<k); }
+inline ll clear_bit(ll n,ll k){ return n & ~(1LL<<k); }
+inline ll toggle_bit(ll n,ll k){ return n ^ (1LL<<k); }
+inline ll count_set_bits(ll n){ return __builtin_popcountll(n); }
+inline ll count_trailing_zeros(ll n){ return (n==0)?64:__builtin_ctzll(n); }
+inline ll count_leading_zeros(ll n){ return (n==0)?64:__builtin_clzll(n); }
+inline ll total_bits(ll n){ return 64 - count_leading_zeros(n); }
+inline ll count_zero_bits(ll n){ return 64 - count_set_bits(n); }
+inline ll lowest_set_bit(ll n){ return n & (-n); }
+inline ll lowest_set_bit_position(ll n){ return (n==0)?0:__builtin_ffsll(n); }
+inline ll xor_from_1_to_n(ll n){ return (n%4==0) ? n : ((n%4==1)?1:((n%4==2)?(n+1):0)); }
+inline ll reverse_bits(ll n){ ll r=0; for(ll i=0;i<64;i++){ if(n&(1ULL<<i)) r|=(1ULL<<(63-i)); } return r; }
+inline ll msb_index(ll n){return n?63LL-count_leading_zeros(n):-1;}
+inline ll msb_value(ll n){return n?1ULL<<(63LL-count_leading_zeros(n)):0LL;}
+ll gcd(ll a, ll b){ return b ? gcd(b, a % b) : a; }
+ll lcm(ll a, ll b) { return (a / gcd(a, b) * b); }
 bool pr(ll n) {
     if (n <= 1) return false;
     if (n <= 3) return true;
@@ -100,18 +119,34 @@ bool pr(ll n) {
         if (n % i == 0 || n % (i + 2) == 0) return false;
     return true;
 }
-ll gcd(ll a, ll b){ return b ? gcd(b, a % b) : a; }
-ll lcm(ll a, ll b) { return (a / gcd(a, b) * b); }
-ll modpow(ll x, ll y, ll p) {
-    ll res = 1;
-    x = x % p;
-    if (x == 0) return 0;
-    while (y > 0) {
-        if (y & 1) res = (res * x) % p;
-        y = y >> 1;
-        x = (x * x) % p;
+
+inline ll fpow(ll a,ll b){
+    ll ans=1;
+    while(b>0){
+        if(b & 1) ans*=a;
+        a*=a; b>>=1;
     }
-    return res;
+    return ans;
+}
+inline ll fpowmod(ll a,ll b,ll m){
+    ll ans=1; a%=m;
+    while(b>0){
+        if(b & 1) ans=(ans*a)%m;
+        a=(a*a)%m; b>>=1;
+    }
+    return ans;
+}
+inline ll countDivisors(ll n){
+    ll tot=1,c=0;
+    while(n%2==0){ n/=2; c++; }
+    tot*=(c+1);
+    for(ll i=3;i*i<=n;i+=2){
+        c=0;
+        while(n%i==0){ n/=i; c++; }
+        tot*=(c+1);
+    }
+    if(n>1) tot*=2;
+    return tot;
 }
 vector<int> sieve(int n) {
     int *arr = new int[n + 1]();
@@ -274,10 +309,9 @@ struct ST {
 	}
 };
 ///////////////////////////STRUCTS///////////////////////////////////////
+
 void solve() {
-    vec<vec<int>> a(2, vec<int>(2));
-    cin >> a;
-    cout << a;
+
 }
 signed main() {
     //ll inv2 = modexp(2, MOD - 2), inv4 = (inv2 * inv2) % MOD;
