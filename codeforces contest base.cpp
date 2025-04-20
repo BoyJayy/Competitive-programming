@@ -2,7 +2,7 @@
 ///////////////////////////MACRO///////////////////////////////////////
 #include <bits/stdc++.h>
 #define all(a) (a).begin(), (a).end()
-//#define endl "\n"
+#define endl "\n"
 #define vec vector
 //#define int long long
 #define pii pair<int, int>
