@@ -1,4 +1,3 @@
-
 ///////////////////////////MACRO///////////////////////////////////////
 #include <bits/stdc++.h>
 #define all(a) (a).begin(), (a).end()
@@ -14,16 +13,18 @@
 #define yes cout << "YES\n";
 #define m1 cout << "-1\n";
 #define no cout << "NO\n";
+#include <ext/pb_ds/assoc_container.hpp>
 using namespace std;
+using namespace __gnu_pbds;
 typedef long long ll;
 typedef unsigned long long ull;
 typedef long double ld;
 ///////////////////////////MACRO///////////////////////////////////////
 ///////////////////////////GLOBAL VARIABLES///////////////////////////////////////
 const ll INF = (1LL<<62);
-const ll MOD = 1e9 + 7;
-const ll MOD2 = 1e9 + 9;
-const ll MOD3 = 998244353;
+const ll mod = 1e9 + 7;
+const ll mod2 = 1e9 + 9;
+const ll mod3 = 998244353;
 const string spi = "3.141592653589793238";
 const ld pi = acos(-1);
 const long double EPS = 1e-9;
@@ -231,6 +232,37 @@ string toLower(const string &s) {string res = s;transform(res.begin(), res.end()
 string toUpper(const string &s) {string res = s;transform(res.begin(), res.end(), res.begin(), ::toupper);return res;}
 ///////////////////////////FUNCS///////////////////////////////////////
 ///////////////////////////STRUCTS///////////////////////////////////////
+template <typename T>
+struct fenwick_tree {
+   private:
+    vector<T> tree;
+    T sum_from_zero(int i) {
+        T s = 0;
+        while (i) {
+            s += tree[i - 1];
+            i &= i - 1;
+        }
+        return s;
+    }
+
+   public:
+    fenwick_tree(int N) : tree(vector<T>(N)) {}
+    T sum(int l, int r) {
+        assert(0 <= l && l <= r && r <= sz(tree));
+        return sum_from_zero(r) - sum_from_zero(l);
+    }
+    T get(int i) {
+        assert(0 <= i && i < sz(tree));
+        return sum(i, i + 1);
+    }
+    void add(int i, T x) {
+        assert(0 <= i && i < sz(tree));
+        while (i < sz(tree)) {
+            tree[i] += x;
+            i |= i + 1;
+        }
+    }
+};
 struct DSU{
     vec<int> leads, sizes;
     DSU(){};
@@ -255,65 +287,72 @@ struct DSU{
         sizes[x] += sizes[y];
     }
 };
-
 struct ST {
-	int n;
-	vec<vec<ll>> stMin, stMax, stGcd, stAnd, stOr;
-	vec<int> lg;
-	ST(const vec<ll>& a) {
-		n = a.size();
-		lg.resize(n + 1);
-		for (int i = 2; i <= n; i++)
-			lg[i] = lg[i / 2] + 1;
-		int K = lg[n] + 1;
-		stMin.assign(n, vec<ll>(K));
-		stMax.assign(n, vec<ll>(K));
-		stGcd.assign(n, vec<ll>(K));
-		stAnd.assign(n, vec<ll>(K));
-		stOr.assign(n, vec<ll>(K));
-		for (int i = 0; i < n; i++){
-			stMin[i][0] = a[i];
-			stMax[i][0] = a[i];
-			stGcd[i][0] = a[i];
-			stAnd[i][0] = a[i];
-			stOr[i][0] = a[i];
-		}
-		for (int j = 1; j < K; j++)
-			for (int i = 0; i + (1 << j) <= n; i++){
-				stMin[i][j] = min(stMin[i][j - 1], stMin[i + (1 << (j - 1))][j - 1]);
-				stMax[i][j] = max(stMax[i][j - 1], stMax[i + (1 << (j - 1))][j - 1]);
-				stGcd[i][j] = gcd(stGcd[i][j - 1], stGcd[i + (1 << (j - 1))][j - 1]);
-				stAnd[i][j] = stAnd[i][j - 1] & stAnd[i + (1 << (j - 1))][j - 1];
-				stOr[i][j] = stOr[i][j - 1] | stOr[i + (1 << (j - 1))][j - 1];
-			}
-	}
-	ll getmin(int L, int R) {
-		int j = lg[R - L + 1];
-		return min(stMin[L][j], stMin[R - (1 << j) + 1][j]);
-	}
-	ll getmax(int L, int R) {
-		int j = lg[R - L + 1];
-		return max(stMax[L][j], stMax[R - (1 << j) + 1][j]);
-	}
-	ll getgcd(int L, int R) {
-		int j = lg[R - L + 1];
-		return gcd(stGcd[L][j], stGcd[R - (1 << j) + 1][j]);
-	}
-	ll getand(int L, int R) {
-		int j = lg[R - L + 1];
-		return stAnd[L][j] & stAnd[R - (1 << j) + 1][j];
-	}
-	ll getor(int L, int R) {
-		int j = lg[R - L + 1];
-		return stOr[L][j] | stOr[R - (1 << j) + 1][j];
-	}
+    int n;
+    vec<vec<ll>> stMin, stMax, stGcd, stAnd, stOr;
+    vec<int> lg;
+    ST(const vec<ll>& a) {
+        n = a.size();
+        lg.resize(n + 1);
+        for (int i = 2; i <= n; i++)
+            lg[i] = lg[i / 2] + 1;
+        int K = lg[n] + 1;
+        stMin.assign(n, vec<ll>(K));
+        stMax.assign(n, vec<ll>(K));
+        stGcd.assign(n, vec<ll>(K));
+        stAnd.assign(n, vec<ll>(K));
+        stOr.assign(n, vec<ll>(K));
+        for (int i = 0; i < n; i++){
+            stMin[i][0] = a[i];
+            stMax[i][0] = a[i];
+            stGcd[i][0] = a[i];
+            stAnd[i][0] = a[i];
+            stOr[i][0] = a[i];
+        }
+        for (int j = 1; j < K; j++)
+            for (int i = 0; i + (1 << j) <= n; i++){
+                stMin[i][j] = min(stMin[i][j - 1], stMin[i + (1 << (j - 1))][j - 1]);
+                stMax[i][j] = max(stMax[i][j - 1], stMax[i + (1 << (j - 1))][j - 1]);
+                stGcd[i][j] = gcd(stGcd[i][j - 1], stGcd[i + (1 << (j - 1))][j - 1]);
+                stAnd[i][j] = stAnd[i][j - 1] & stAnd[i + (1 << (j - 1))][j - 1];
+                stOr[i][j] = stOr[i][j - 1] | stOr[i + (1 << (j - 1))][j - 1];
+            }
+    }
+    ll getmin(int L, int R) {
+        int j = lg[R - L + 1];
+        return min(stMin[L][j], stMin[R - (1 << j) + 1][j]);
+    }
+    ll getmax(int L, int R) {
+        int j = lg[R - L + 1];
+        return max(stMax[L][j], stMax[R - (1 << j) + 1][j]);
+    }
+    ll getgcd(int L, int R) {
+        int j = lg[R - L + 1];
+        return gcd(stGcd[L][j], stGcd[R - (1 << j) + 1][j]);
+    }
+    ll getand(int L, int R) {
+        int j = lg[R - L + 1];
+        return stAnd[L][j] & stAnd[R - (1 << j) + 1][j];
+    }
+    ll getor(int L, int R) {
+        int j = lg[R - L + 1];
+        return stOr[L][j] | stOr[R - (1 << j) + 1][j];
+    }
 };
+typedef tree<
+    int,
+    null_type,
+    less<int>,
+    rb_tree_tag,
+    tree_order_statistics_node_update>
+ordered_set;
 ///////////////////////////STRUCTS///////////////////////////////////////
 
 void solve() {
-
 }
+
 signed main() {
+    //precalc();
     //ll inv2 = modexp(2, MOD - 2), inv4 = (inv2 * inv2) % MOD;
     #ifdef LOCAL
         freopen("lca.in", "r", stdin);
