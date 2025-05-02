@@ -40,40 +40,45 @@ int t = 0;
 vector<int> rb[MAXN];
 ///////////////////////////GLOBAL VARIABLES///////////////////////////////////////
 ///////////////////////////TEMPLATES///////////////////////////////////////
-template <typename T>
-void printa(const vec<T> a) {
-    for (auto& p: a) {
-        cout << p << ' ';
-    }
-    cout << endl;
-}
-template<typename T1, typename T2>
-ostream& operator << (ostream& out, const pair<T1, T2>& p){
-    return out << "(" << p.first << ", " << p.second << ")";
+ostream& operator<< (ostream &os, const pair<int, int>& a){
+    return os << a.fi << " " << a.se;
 }
 
-template<typename T>
-ostream& operator << (ostream& out, const vector<T>& v){
-    out << "[";
-    for (int i = 0; i < v.size(); i++){
-        if (i) out << ", ";
-        out << v[i];
-    }
-    out << "]";
-    return out;
-}
-
-template<typename T1, typename T2>
-istream& operator >> (istream& in, pair<T1, T2>& p){
-    in >> p.first;
-    in >> p.second;
+istream& operator>> (istream& in, pair<ld, ld>& a){
+    in >> a.fi >> a.se;
     return in;
 }
 
-template<typename T>
-istream& operator >> (istream& in, vector<T>& v){
-    for (auto& e : v) in >> e;
+ostream& operator<< (ostream &os, const vector<int>& a){
+    for (int x : a) os << x << " ";
+    return os;
+
+}
+
+istream& operator>> (istream& in, vector<pair<int, int>>& a){
+    for (pair<int, int>& x : a) in >> x.fi >> x.se;
     return in;
+}
+
+ostream& operator<< (ostream &os, const vector<pair<int, int>>& a){
+    for (pair<int, int> x : a) os << x.fi << " " << x.se << endl;
+    return os;
+
+}
+
+istream& operator>> (istream& in, vector<int>& a){
+    for (int& x : a) in >> x;
+    return in;
+}
+
+ostream& operator<< (ostream &os, const set<int>& a){
+    for (int x : a) os << x << " ";
+    return os;
+}
+
+ostream& operator<< (ostream &os, const map<int, int>& a){
+    for (pair<int, int> x : a) os << x.fi << " " << x.se << endl;
+    return os;
 }
 template <typename T>
 void printrb(vector<T>* rb, int n) {
@@ -159,6 +164,51 @@ vector<int> sieve(int n) {
                 arr[j] = 1;
         }
     return vect;
+}
+vector<ll> z_function(const string& s) {
+    ll n = s.size();
+    vector<ll> z(n);
+    ll l = 0, r = 0;
+    for (ll i = 1; i < n; ++i) {
+        if (i <= r)
+            z[i] = min(r - i + 1, z[i - l]);
+        while (i + z[i] < n && s[z[i]] == s[i + z[i]])
+            ++z[i];
+        if (i + z[i] - 1 > r) {
+            l = i;
+            r = i + z[i] - 1;
+        }
+    }
+    return z;
+}
+vector<ll> prefix_function(const string& s) {
+    ll n = s.size();
+    vector<ll> pi(n);
+    for (ll i = 1; i < n; ++i) {
+        ll j = pi[i - 1];
+        while (j > 0 && s[i] != s[j])
+            j = pi[j - 1];
+        if (s[i] == s[j])
+            ++j;
+        pi[i] = j;
+    }
+    return pi;
+}
+void bfs(ll start, vector<vector<ll> >& adj, vector<ll>& dist) {
+    queue<ll> q;
+    q.push(start);
+    dist[start] = 0;
+    while (!q.empty()) {
+        ll v = q.front();
+        q.pop();
+        for (vector<ll>::iterator it = adj[v].begin(); it < adj[v].end(); ++it) {
+            ll u = *it;
+            if (dist[u] == -1) {
+                dist[u] = dist[v] + 1;
+                q.push(u);
+            }
+        }
+    }
 }
 bool ances(int u, int v) {
     return tin[u] <= tin[v] && tin[v] < tout[u];
@@ -349,6 +399,7 @@ ordered_set;
 ///////////////////////////STRUCTS///////////////////////////////////////
 
 void solve() {
+
 }
 
 signed main() {
