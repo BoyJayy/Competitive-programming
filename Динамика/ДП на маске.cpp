@@ -1,4 +1,4 @@
-int n; 
+    int n; 
     cin>>n;
     vector<vector<ll>> w(n, vector<ll>(n));
     for(int i=0;i<n;i++) for(int j=0;j<n;j++) cin>>w[i][j];
