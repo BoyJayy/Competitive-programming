@@ -6,6 +6,6 @@
 - peak rating 2308 (31.05.2025)
 - peak rating 2396 (31.07.2025)
 - PEAK RATING 2502 (03.10.2025) GRANDMASTER
-
+- peak rating 2505 [rollback] (15.10.25)
 
 - https://codeforces.com/profile/bjcb
