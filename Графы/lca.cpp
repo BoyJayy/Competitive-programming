@@ -1,6 +1,9 @@
 int up[LOGN][MAXN];
 vector<int> tin(MAXN, -1), tout(MAXN, -1);
 vec<int> depth(MAXN, 0);
+bool ances(int u, int v) {
+    return tin[u] <= tin[v] && tin[v] < tout[u];
+}
 void dfsUPS(int v) { //offline
     for (int i = 1; i < LOGN; i++) {
         if (up[v][i - 1] != -1 && up[up[v][i - 1]][i - 1] != -1)
@@ -50,3 +53,4 @@ int lca1(int u, int v) { //offline lca method
     }
     return up[v][0];
 }
+
