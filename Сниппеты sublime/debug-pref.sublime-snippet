@@ -1,0 +1,42 @@
+<snippet>
+    <content><![CDATA[
+#define DEBUG 1
+
+#if DEBUG
+#define del cout << '\n'
+#define debug(...) _debug(#__VA_ARGS__, __VA_ARGS__)
+template <class X, class Y>
+ostream& operator<<(ostream& os, pair<X, Y> const& p) {
+    return os << "(" << p.first << ", " << p.second << ")";
+}
+template <class Ch, class Tr, class Container>
+basic_ostream<Ch, Tr>& operator<<(basic_ostream<Ch, Tr>& os, Container const& x) {
+    int i = 0, n = (int)distance(x.begin(), x.end());
+    os << "{ ";
+    for (const auto& y : x) os << y << (++i < n ? ", " : "");
+    return os << " }";
+}
+template <typename... Args>
+void _debug(const char* s, Args&&... args) {
+    cout << "{ ";
+    size_t i = 0, cnt = 0, n = sizeof...(args);
+    auto next = [&]() {
+        while (s[i] && (s[i] == ' ' || s[i] == ',')) ++i;
+        size_t st = i;
+        while (s[i] && s[i] != ',') ++i;
+        return string(s + st, i - st);
+    };
+    auto dummy = {(cout << next() << ": " << args << (++cnt < n ? ", " : ""), 0)...};
+    (void)dummy;
+    cout << " }" << '\n';
+}
+#else
+#define del
+#define debug(...)
+#endif
+$0
+]]></content>
+    <tabTrigger>debug_pref</tabTrigger>
+    <scope>source.c++</scope>
+    <description></description>
+</snippet>

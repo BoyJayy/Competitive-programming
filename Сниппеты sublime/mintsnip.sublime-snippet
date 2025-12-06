@@ -1,0 +1,72 @@
+<snippet>
+    <content><![CDATA[
+constexpr int MAX_N = 1e6 + 14, MOD = 1'000'000'007;
+struct Mint {
+    int x;
+    Mint(ll x = 0) : x((x % MOD + MOD) % MOD) {
+    }
+    explicit operator int() const {
+        return x;
+    }
+    bool operator==(const Mint& rhs) const {
+        return x == rhs.x;
+    }
+    bool operator!=(const Mint& rhs) const {
+        return !(rhs == *this);
+    }
+    friend Mint operator+(const Mint& l, const Mint& r) {
+        return l.x + r.x;
+    }
+    Mint& operator+=(const Mint& o) {
+        return *this = *this + o;
+    }
+    friend Mint operator-(const Mint& l, const Mint& r) {
+        return l.x - r.x;
+    }
+    Mint operator-() const {
+        return -x;
+    }
+    Mint& operator-=(const Mint& o) {
+        return *this = *this - o;
+    }
+    friend Mint operator*(const Mint& l, const Mint& r) {
+        return (ll)l.x * r.x;
+    }
+    Mint& operator*=(const Mint& o) {
+        return *this = *this * o;
+    }
+    Mint pow(ll b) const {
+        Mint ans = 1;
+        Mint a = *this;
+        for (; b; b >>= 1, a = a * a)
+            if (b & 1)
+                ans *= a;
+        return ans;
+    }
+    friend Mint operator/(const Mint& l, const Mint& r) {
+        return l * r.pow(MOD - 2);
+    }
+    Mint& operator/=(const Mint& o) {
+        return *this = *this / o;
+    }
+    friend ostream& operator<<(ostream& os, const Mint& o) {
+        return os << o.x;
+    }
+};
+Mint fac[MAX_N] = {1}, rfac[MAX_N] = {1};
+void prep() {
+    for (int i = 1; i < MAX_N; ++i)
+        fac[i] = fac[i - 1] * i;
+    rfac[MAX_N - 1] = 1 / fac[MAX_N - 1];
+    for (int i = MAX_N - 2; i >= 0; --i)
+        rfac[i] = (i + 1) * rfac[i + 1];
+}
+Mint c(int n, int r) {
+    return n < r || r < 0 ? 0 : fac[n] * rfac[r] * rfac[n - r];
+}
+$0
+]]></content>
+    <tabTrigger>mintsnip</tabTrigger>
+    <scope>source.c++</scope>
+    <description></description>
+</snippet>

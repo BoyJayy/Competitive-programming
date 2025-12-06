@@ -1,0 +1,18 @@
+<snippet>
+    <content><![CDATA[
+long long phi(long long n) {
+    long long res = n;
+    for (long long p = 2; p * p <= n; ++p) {
+        if (n % p == 0) {
+            while (n % p == 0) n /= p;
+            res -= res / p;
+        }
+    }
+    if (n > 1) res -= res / n;
+    return res;
+}
+    ]]></content>
+    <tabTrigger>phi_func</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Euler's totient function</description>
+</snippet>

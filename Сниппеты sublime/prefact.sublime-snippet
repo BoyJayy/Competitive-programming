@@ -1,0 +1,22 @@
+<snippet>
+    <content><![CDATA[
+vector<int> fact(n + 1), inv(n + 1), invfact(n + 1);
+
+fact[0] = 1;
+for (int i = 1; i <= n; ++i)
+    fact[i] = (ll)fact[i - 1] * i % mod;
+
+inv[1] = 1;
+for (int i = 2; i <= n; ++i)
+    inv[i] = (int)(mod - (ll)(mod / i) * inv[mod % i] % mod);
+
+invfact[0] = 1;
+for (int i = 1; i <= n; ++i)
+    invfact[i] = (ll)invfact[i - 1] * inv[i] % mod;
+
+$0
+]]></content>
+    <tabTrigger>prefact</tabTrigger>
+    <scope>source.c++</scope>
+    <description></description>
+</snippet>

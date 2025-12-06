@@ -1,0 +1,36 @@
+<snippet>
+    <content><![CDATA[
+pair<int, int> bin_s_l(int x, vector<int>& arr)
+{
+    int n = arr.size();
+    int r = n - 1; int l = -1;
+    while (r - l > 1)
+    {
+        int mid = (r + l) / 2;
+        if (arr[mid] >= x)
+            r = mid;
+        else
+            l = mid;
+    }
+    return { r, l };
+}
+
+pair<int, int> bin_s_r(int x, vector<int>& arr)
+{
+    int n = arr.size();
+    int r = n; int l = 0;
+    while (r - l > 1)
+    {
+        int mid = (r + l) / 2;
+        if (arr[mid] > x)
+            r = mid;
+        else
+            l = mid;
+    }
+    return { r, l };
+}
+    ]]></content>
+    <tabTrigger>bin_bounds</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Binary search for left/right bounds</description>
+</snippet>

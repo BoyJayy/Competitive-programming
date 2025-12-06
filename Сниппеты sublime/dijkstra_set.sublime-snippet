@@ -1,0 +1,21 @@
+<snippet>
+    <content><![CDATA[
+st.insert({0, s});
+while (!st.empty()) {
+    auto it = st.begin();
+    int v = (*it).se;
+    st.erase(it);
+    for (pii p: rb[v]) {
+        int ne = p.first;
+        int c = p.second;
+        if (dist[ne] > dist[v] + c) {
+            dist[ne] = dist[v] + c;
+            st.insert({dist[ne], ne});
+        }
+    }
+}
+    ]]></content>
+    <tabTrigger>dijk_set</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Dijkstra with set</description>
+</snippet>

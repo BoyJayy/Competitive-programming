@@ -1,0 +1,18 @@
+<snippet>
+    <content><![CDATA[
+pll fibdp(ll n) {
+    if (n == 0) return(make_pair(0, 1));
+    pll t = fibdp(n>>1); // dp(n/2)
+    ll a = t.fi;
+    ll b = t.se;
+    ll b2 = (b * 2) % mod; //dp(n/2 + 1) * 2
+    ll ans1 = (ll)((__int128)a * ((b2 - a + mod) % mod))%mod; // dp(n) = dp(n/2) * (dp(n/2+1) - dp(n/2)
+    ll ans2 = (ll)((((__int128)a*a + (__int128)b*b)%mod)); // dp(n + 1) = dp(n/2)^2 + dp(n/2+1)^2;
+    if (!(n & 1)) return make_pair(ans1, ans2);
+    return make_pair(ans2, (ans1 + ans2)%mod);
+}
+    ]]></content>
+    <tabTrigger>fib_fd</tabTrigger>
+    <scope>source.c++</scope>
+    <description>Fast doubling Fibonacci (pair)</description>
+</snippet>
