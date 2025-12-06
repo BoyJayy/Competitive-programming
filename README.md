@@ -1,3 +1,5 @@
+! ALL NAMES ARE IN RUSSIAN SO PLS USE TRANSLATOR FOR THEM !
+
 - expert in november 2024
 - candidate master in march 2025
 - master 29.03.2025
