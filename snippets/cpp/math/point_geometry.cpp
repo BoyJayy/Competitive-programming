@@ -1,41 +1,36 @@
-struct point {
-    long double x, y;
-    point() {
-        x = 0.0, y = 0.0;
+template <typename T>
+struct Point {
+    T x, y;
+
+    Point(T x = 0, T y = 0): x(x), y(y) {}
+
+    Point operator+(Point other) const {
+        return {x + other.x, y + other.y};
     }
-    point(ll x_, ll y_) {
-        x = x_, y = y_;
+
+    Point operator-(Point other) const {
+        return {x - other.x, y - other.y};
     }
-    point operator +(point other) {
-        return point(x + other.x, y + other.y);
+
+    Point operator*(T k) const {
+        return {x * k, y * k};
     }
-    point operator -(point other) {
-        return point(x - other.x, y - other.y);
-    }
-    ll operator *(point other) {
+
+    T dot(Point other) const {
         return x * other.x + y * other.y;
     }
-    ll operator %(point other) {
+
+    T cross(Point other) const {
         return x * other.y - y * other.x;
     }
-    long double len() {
-        return sqrt(x * x + y * y);
+
+    long double len() const {
+        return sqrt((long double)dot(*this));
     }
-    point operator*(long double l) {
-        return point(x * l, y * l);
-    }
-    point operator /(long double l) {
-        return point(x / l, y / l);
-    }
-    long double dist(point other) {
-        return sqrt((x - other.x) * (x - other.x) + (y - other.y) * (y - other.y));
+
+    long double dist(Point other) const {
+        long double dx = x - other.x;
+        long double dy = y - other.y;
+        return sqrt(dx * dx + dy * dy);
     }
 };
-istream& operator >> (istream& in, point &a) {
-    in >> a.x >> a.y;
-    return in;
-}
-ostream& operator << (ostream& os, point &b) {
-    os << b.x << ' ' << b.y << '\n';
-    return os;
-}

@@ -1,8 +1,9 @@
-vector<long long> dijkstra_set(int s, const vector<vector<pair<int, int>>>& g) {
-    const long long INF = 4e18;
+template <typename T>
+vector<T> dijkstra_set(int s, const vector<vector<pair<int, T>>>& g) {
+    T INF = numeric_limits<T>::max() / 4;
     int n = g.size();
-    vector<long long> dist(n, INF);
-    set<pair<long long, int>> st;
+    vector<T> dist(n, INF);
+    set<pair<T, int>> st;
     dist[s] = 0;
     st.insert({0, s});
     while (!st.empty()) {

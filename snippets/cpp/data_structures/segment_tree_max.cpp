@@ -1,39 +1,32 @@
-struct Tree {
-  vec<pii> nodes;
-    int size = 1;
-    const int neutr = -INF;
-    Tree(){};
-    Tree (vec<int>& a) {
-        while (size < a.size()) size *= 2;
-        nodes.resize(size * 2, neutr);
-        for (int i = 0; i < a.size(); i++) {
-            nodes[i + size] = {a[i], i};
-        }
-        for (int i = size - 1; i >= 1; i--) {
-            nodes[i] = max(nodes[i * 2], nodes[i * 2 + 1]);
-        }
+template <typename T>
+struct SegTreeMax {
+    int n;
+    vector<pair<T, int>> t;
+
+    SegTreeMax(const vector<T>& a = {}) {
+        if (!a.empty()) build(a);
     }
-    pii get_max(int now, int l, int r, int lq, int rq) {
-        if (lq <= l && rq >= r) {
-            return nodes[now];
-        }
-        if (l >= rq || r <= lq) {
-            return neutr;
-        }
-        pii r_s = get_sum(now * 2 + 1, (l + r) / 2, r, lq, rq);
-        pii l_s = get_sum(now * 2, l, (l + r) / 2, lq, rq);
-        return max(r_s, l_s);
+
+    void build(const vector<T>& a) {
+        n = 1;
+        while (n < (int)a.size()) n <<= 1;
+        t.assign(2 * n, {numeric_limits<T>::lowest(), -1});
+        for (int i = 0; i < (int)a.size(); i++) t[i + n] = {a[i], i};
+        for (int i = n - 1; i; i--) t[i] = max(t[i << 1], t[i << 1 | 1]);
     }
-    void update(int num, int now, int l, int r, int lq, int rq) {
-        if (lq <= l && rq >= r) {
-            nodes[now] = {num, now - size};
-            return;
+
+    void set_val(int pos, T x) {
+        pos += n;
+        t[pos] = {x, pos - n};
+        for (pos >>= 1; pos; pos >>= 1) t[pos] = max(t[pos << 1], t[pos << 1 | 1]);
+    }
+
+    pair<T, int> get(int l, int r) {
+        pair<T, int> L = {numeric_limits<T>::lowest(), -1}, R = L;
+        for (l += n, r += n + 1; l < r; l >>= 1, r >>= 1) {
+            if (l & 1) L = max(L, t[l++]);
+            if (r & 1) R = max(t[--r], R);
         }
-        if (l >= rq || r <= lq) {
-            return;
-        }
-        update(num, now * 2 + 1, (l + r) / 2, r, lq, rq);
-        update(num, now * 2, l, (l + r) / 2, lq, rq);
-        nodes[now] = max(nodes[now * 2], nodes[now * 2 + 1]);
+        return max(L, R);
     }
 };

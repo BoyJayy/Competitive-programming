@@ -1,17 +1,20 @@
+template <typename T>
 struct FactTable {
     int n;
-    int MOD;
-    vector<int> fact, inv, invfact;
-    FactTable(int n_, int MOD_) : n(n_), MOD(MOD_), fact(n_+1), inv(n_+1), invfact(n_+1) {
+    T mod;
+    vector<T> fact, inv, invfact;
+
+    FactTable(int n, T mod): n(n), mod(mod), fact(n + 1), inv(n + 1), invfact(n + 1) {
         fact[0] = 1;
-        for (int i = 1; i <= n; ++i) fact[i] = (int)((int64)fact[i-1] * i % MOD);
+        for (int i = 1; i <= n; i++) fact[i] = fact[i - 1] * i % mod;
         inv[1] = 1;
-        for (int i = 2; i <= n; ++i) inv[i] = (int)(MOD - (int64)(MOD / i) * inv[MOD % i] % MOD);
+        for (int i = 2; i <= n; i++) inv[i] = mod - (mod / i) * inv[mod % i] % mod;
         invfact[0] = 1;
-        for (int i = 1; i <= n; ++i) invfact[i] = (int)((int64)invfact[i-1] * inv[i] % MOD);
+        for (int i = 1; i <= n; i++) invfact[i] = invfact[i - 1] * inv[i] % mod;
     }
-    int C(int n, int k) const {
-        if (k < 0 || k > n) return 0;
-        return (int)((int64)fact[n] * invfact[k] % MOD * invfact[n-k] % MOD);
+
+    T C(int n, int k) {
+        if (k < 0 || k > n) return T();
+        return fact[n] * invfact[k] % mod * invfact[n - k] % mod;
     }
 };

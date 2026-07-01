@@ -39,11 +39,12 @@ std::vector<int> z_function(const std::string& s) {
     return z;
 }
 
+template <typename T = long long>
 struct Hash {
-    long long mod, base;
-    std::vector<long long> h, pw;
+    T mod, base;
+    std::vector<T> h, pw;
 
-    Hash(const std::string& s, long long mod = 1000000007, long long base = 911382323): mod(mod), base(base) {
+    Hash(const std::string& s, T mod = 1000000007, T base = 911382323): mod(mod), base(base) {
         int n = s.size();
         h.assign(n + 1, 0);
         pw.assign(n + 1, 1);
@@ -53,7 +54,7 @@ struct Hash {
         }
     }
 
-    long long get(int l, int r) {
+    T get(int l, int r) {
         return (h[r + 1] - h[l] * pw[r - l + 1] % mod + mod) % mod;
     }
 };

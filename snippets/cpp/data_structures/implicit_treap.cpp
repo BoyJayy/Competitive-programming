@@ -1,16 +1,18 @@
+template <typename T>
 struct ImpTreap {
     struct Node {
-        ll v, sum;
+        T v, sum;
         int pr, sz;
         bool rev;
         Node *l, *r;
-        Node(ll v) : v(v), sum(v), pr(rand()), sz(1), rev(false), l(nullptr), r(nullptr) {}
+
+        Node(T v): v(v), sum(v), pr(rand()), sz(1), rev(false), l(nullptr), r(nullptr) {}
     };
 
     Node* root = nullptr;
 
     int sz(Node* t) { return t ? t->sz : 0; }
-    ll sm(Node* t) { return t ? t->sum : 0; }
+    T sm(Node* t) { return t ? t->sum : T(); }
 
     void push(Node* t) {
         if (!t || !t->rev) return;
@@ -27,12 +29,16 @@ struct ImpTreap {
     }
 
     void split(Node* t, int k, Node*& a, Node*& b) {
-        if (!t) { a = b = nullptr; return; }
+        if (!t) {
+            a = b = nullptr;
+            return;
+        }
         push(t);
         if (k <= sz(t->l)) {
             split(t->l, k, a, t->l);
             b = t;
-        } else {
+        }
+        else {
             split(t->r, k - sz(t->l) - 1, t->r, b);
             a = t;
         }
@@ -46,15 +52,14 @@ struct ImpTreap {
             a->r = merge(a->r, b);
             upd(a);
             return a;
-        } else {
-            push(b);
-            b->l = merge(a, b->l);
-            upd(b);
-            return b;
         }
+        push(b);
+        b->l = merge(a, b->l);
+        upd(b);
+        return b;
     }
 
-    void insert(int pos, ll v) {
+    void insert(int pos, T v) {
         Node *a, *b;
         split(root, pos, a, b);
         root = merge(merge(a, new Node(v)), b);
@@ -65,14 +70,6 @@ struct ImpTreap {
         split(root, l, a, b);
         split(b, r - l + 1, b, c);
         root = merge(a, c);
-        queue<Node*> q;
-        if (b) q.push(b);
-        while (!q.empty()) {
-            Node* t = q.front(); q.pop();
-            if (t->l) q.push(t->l);
-            if (t->r) q.push(t->r);
-            delete t;
-        }
     }
 
     void reverse_range(int l, int r) {
@@ -83,19 +80,22 @@ struct ImpTreap {
         root = merge(merge(a, b), c);
     }
 
-    void set_point(int pos, ll x) {
+    void set_val(int pos, T x) {
         Node *a, *b, *c;
         split(root, pos, a, b);
         split(b, 1, b, c);
-        if (b) { b->v = x; upd(b); }
+        if (b) {
+            b->v = x;
+            upd(b);
+        }
         root = merge(merge(a, b), c);
     }
 
-    ll sum_range(int l, int r) {
+    T sum_range(int l, int r) {
         Node *a, *b, *c;
         split(root, l, a, b);
         split(b, r - l + 1, b, c);
-        ll res = sm(b);
+        T res = sm(b);
         root = merge(merge(a, b), c);
         return res;
     }

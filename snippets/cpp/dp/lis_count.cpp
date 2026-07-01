@@ -1,4 +1,5 @@
-pair<int, int> lis_count(const vector<int>& a, int mod) {
+template <typename T>
+pair<int, int> lis_count(const vector<T>& a, int mod) {
     int n = a.size();
     vector<int> dp(n, 1), cnt(n, 1);
     int len = 0, ways = 0;

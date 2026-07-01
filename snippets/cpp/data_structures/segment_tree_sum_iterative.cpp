@@ -1,31 +1,32 @@
-struct Tree {
-    vec<int> nodes;
-    int size = 1;
-    Tree(){};
-    Tree (vec<int>& a) {
-        while (size < a.size()) size *= 2;
-        nodes.resize(size * 2, 0);
-        for (int i = 0; i < a.size(); i++) {
-            nodes[i + size] = a[i];
-        }
-        for (int i = size - 1; i >= 1; i--) {
-            nodes[i] = nodes[i * 2] + nodes[i * 2 + 1];
-        }
+template <typename T>
+struct SegTreeSumIter {
+    int n;
+    vector<T> t;
+
+    SegTreeSumIter(const vector<T>& a = {}) {
+        if (!a.empty()) build(a);
     }
-    int get_sum(int l, int r) {
-        int sum = 0;
-        l += size; r += size;
-        while (l <= r) {
-            if (l % 2 != 0) {
-                sum += nodes[l];
-                l++;
-            }
-            if (r % 2 == 0) {
-                sum += nodes[r];
-                r--;
-            }
-            l /= 2; r /= 2;
+
+    void build(const vector<T>& a) {
+        n = 1;
+        while (n < (int)a.size()) n <<= 1;
+        t.assign(2 * n, T());
+        for (int i = 0; i < (int)a.size(); i++) t[i + n] = a[i];
+        for (int i = n - 1; i; i--) t[i] = t[i << 1] + t[i << 1 | 1];
+    }
+
+    void set_val(int pos, T x) {
+        pos += n;
+        t[pos] = x;
+        for (pos >>= 1; pos; pos >>= 1) t[pos] = t[pos << 1] + t[pos << 1 | 1];
+    }
+
+    T sum(int l, int r) {
+        T ans = T();
+        for (l += n, r += n + 1; l < r; l >>= 1, r >>= 1) {
+            if (l & 1) ans += t[l++];
+            if (r & 1) ans += t[--r];
         }
-        return sum;
+        return ans;
     }
 };

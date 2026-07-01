@@ -1,51 +1,65 @@
+template <typename T>
 struct LiChao {
     struct Line {
-        ll k, b;
-        ll get(ll x) const { return k * x + b; }
+        T k, b;
+        T get(T x) const { return k * x + b; }
     };
+
     struct Node {
         Line ln;
         Node *l, *r;
-        Node(Line ln) : ln(ln), l(nullptr), r(nullptr) {}
+        Node(Line ln): ln(ln), l(nullptr), r(nullptr) {}
     };
 
-    ll X_MIN, X_MAX;
-    Node* root;
+    T L, R;
+    Node* root = nullptr;
 
-    LiChao(ll xmin, ll xmax) : X_MIN(xmin), X_MAX(xmax), root(nullptr) {}
+    LiChao(T L, T R): L(L), R(R) {}
 
-    void add_line(Line nw) { add_line(root, X_MIN, X_MAX, nw); }
-
-    void add_line(Node*& t, ll L, ll R, Line nw) {
-        if (!t) { t = new Node(nw); return; }
-        ll mid = (L + R) >> 1;
-        bool lef = nw.get(L) < t->ln.get(L);
-        bool cen = nw.get(mid) < t->ln.get(mid);
-        if (cen) swap(nw, t->ln);
-        if (R - L == 0) return;
-        if (lef != cen) add_line(t->l, L, mid, nw);
-        else add_line(t->r, mid + 1, R, nw);
+    void add_line(Line nw) {
+        add_line(root, L, R, nw);
     }
 
-    void add_segment(Line nw, ll l, ll r) { add_segment(root, X_MIN, X_MAX, nw, l, r); }
-
-    void add_segment(Node*& t, ll L, ll R, Line nw, ll l, ll r) {
-        if (r < L || R < l) return;
-        if (l <= L && R <= r) { add_line(t, L, R, nw); return; }
-        if (!t) t = new Node({0, (ll)4e18});
-        ll mid = (L + R) >> 1;
-        add_segment(t->l, L, mid, nw, l, r);
-        add_segment(t->r, mid + 1, R, nw, l, r);
+    void add_line(Node*& v, T l, T r, Line nw) {
+        if (!v) {
+            v = new Node(nw);
+            return;
+        }
+        T m = (l + r) / 2;
+        bool lef = nw.get(l) < v->ln.get(l);
+        bool mid = nw.get(m) < v->ln.get(m);
+        if (mid) swap(nw, v->ln);
+        if (l == r) return;
+        if (lef != mid) add_line(v->l, l, m, nw);
+        else add_line(v->r, m + 1, r, nw);
     }
 
-    ll query(ll x) { return query(root, X_MIN, X_MAX, x); }
+    void add_segment(Line nw, T ql, T qr) {
+        add_segment(root, L, R, nw, ql, qr);
+    }
 
-    ll query(Node* t, ll L, ll R, ll x) {
-        if (!t) return (ll)4e18;
-        ll res = t->ln.get(x);
-        if (L == R) return res;
-        ll mid = (L + R) >> 1;
-        if (x <= mid) return min(res, query(t->l, L, mid, x));
-        else return min(res, query(t->r, mid + 1, R, x));
+    void add_segment(Node*& v, T l, T r, Line nw, T ql, T qr) {
+        if (ql > r || qr < l) return;
+        if (ql <= l && r <= qr) {
+            add_line(v, l, r, nw);
+            return;
+        }
+        if (!v) v = new Node({0, numeric_limits<T>::max() / 4});
+        T m = (l + r) / 2;
+        add_segment(v->l, l, m, nw, ql, qr);
+        add_segment(v->r, m + 1, r, nw, ql, qr);
+    }
+
+    T get(T x) {
+        return get(root, L, R, x);
+    }
+
+    T get(Node* v, T l, T r, T x) {
+        if (!v) return numeric_limits<T>::max() / 4;
+        T ans = v->ln.get(x);
+        if (l == r) return ans;
+        T m = (l + r) / 2;
+        if (x <= m) return min(ans, get(v->l, l, m, x));
+        return min(ans, get(v->r, m + 1, r, x));
     }
 };

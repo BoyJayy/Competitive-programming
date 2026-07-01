@@ -1,6 +1,7 @@
-long long tree_maximum_independent_set(const vector<vector<int>>& g, const vector<long long>& w) {
+template <typename T>
+T tree_maximum_independent_set(const vector<vector<int>>& g, const vector<T>& w) {
     int n = g.size();
-    vector<long long> take(n), skip(n);
+    vector<T> take(n), skip(n);
     function<void(int, int)> dfs = [&](int v, int p) {
         take[v] = w[v];
         for (int to : g[v]) {

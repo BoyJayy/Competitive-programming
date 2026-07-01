@@ -1,10 +1,9 @@
-vector<int> fact(n + 1), inv(n + 1), invfact(n + 1);
-
-fact[0] = 1;
-for (int i = 1; i <= n; ++i) fact[i] = (long long)fact[i - 1] * i % MOD;
-
-inv[1] = 1;
-for (int i = 2; i <= n; ++i) inv[i] = (int)(MOD - (long long)(MOD / i) * inv[MOD % i] % MOD);
-
-invfact[0] = 1;
-for (int i = 1; i <= n; ++i) invfact[i] = (long long)invfact[i - 1] * inv[i] % MOD;
+template <typename T>
+void build_factorials(int n, T mod, vector<T>& fact, vector<T>& inv, vector<T>& invfact) {
+    fact.assign(n + 1, 1);
+    inv.assign(n + 1, 1);
+    invfact.assign(n + 1, 1);
+    for (int i = 1; i <= n; i++) fact[i] = fact[i - 1] * i % mod;
+    for (int i = 2; i <= n; i++) inv[i] = mod - (mod / i) * inv[mod % i] % mod;
+    for (int i = 1; i <= n; i++) invfact[i] = invfact[i - 1] * inv[i] % mod;
+}

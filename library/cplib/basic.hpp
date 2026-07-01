@@ -2,7 +2,8 @@
 
 namespace cplib {
 
-int lower_pos(const std::vector<int>& a, int x) {
+template <typename T, typename U>
+int lower_pos(const std::vector<T>& a, U x) {
     int l = -1, r = a.size();
     while (r - l > 1) {
         int m = (l + r) / 2;
@@ -12,7 +13,8 @@ int lower_pos(const std::vector<int>& a, int x) {
     return r;
 }
 
-int upper_pos(const std::vector<int>& a, int x) {
+template <typename T, typename U>
+int upper_pos(const std::vector<T>& a, U x) {
     int l = -1, r = a.size();
     while (r - l > 1) {
         int m = (l + r) / 2;
@@ -22,18 +24,21 @@ int upper_pos(const std::vector<int>& a, int x) {
     return r;
 }
 
-long long last_true(long long l, long long r, const std::function<bool(long long)>& ok) {
+template <typename T, typename F>
+T last_true(T l, T r, F ok) {
     while (r - l > 1) {
-        long long m = (l + r) / 2;
+        T m = (l + r) / 2;
         if (ok(m)) l = m;
         else r = m;
     }
     return l;
 }
 
-long long subarrays_sum_at_most(const std::vector<int>& a, long long s) {
+template <typename T, typename U>
+long long subarrays_sum_at_most(const std::vector<T>& a, U s) {
     int n = a.size(), l = 0;
-    long long ans = 0, sum = 0;
+    long long ans = 0;
+    T sum = 0;
     for (int r = 0; r < n; r++) {
         sum += a[r];
         while (sum > s) sum -= a[l++];
@@ -42,31 +47,34 @@ long long subarrays_sum_at_most(const std::vector<int>& a, long long s) {
     return ans;
 }
 
-std::vector<long long> pref_sum(const std::vector<int>& a) {
+template <typename T>
+std::vector<T> pref_sum(const std::vector<T>& a) {
     int n = a.size();
-    std::vector<long long> pref(n + 1);
+    std::vector<T> pref(n + 1);
     for (int i = 0; i < n; i++) pref[i + 1] = pref[i] + a[i];
     return pref;
 }
 
-long long sum_on(const std::vector<long long>& pref, int l, int r) {
+template <typename T>
+T sum_on(const std::vector<T>& pref, int l, int r) {
     return pref[r + 1] - pref[l];
 }
 
+template <typename T = long long>
 struct Diff {
     int n;
-    std::vector<long long> d;
+    std::vector<T> d;
 
     Diff(int n): n(n), d(n + 1) {}
 
-    void add(int l, int r, long long x) {
+    void add(int l, int r, T x) {
         d[l] += x;
         if (r + 1 < n) d[r + 1] -= x;
     }
 
-    std::vector<long long> get() {
-        std::vector<long long> a(n);
-        long long cur = 0;
+    std::vector<T> get() {
+        std::vector<T> a(n);
+        T cur = 0;
         for (int i = 0; i < n; i++) {
             cur += d[i];
             a[i] = cur;
@@ -95,15 +103,19 @@ std::vector<int> submasks(int mask) {
     return res;
 }
 
-int max_non_overlapping(std::vector<std::pair<int, int>> seg) {
+template <typename T>
+int max_non_overlapping(std::vector<std::pair<T, T>> seg) {
     std::sort(seg.begin(), seg.end(), [](auto a, auto b) {
         return a.second == b.second ? a.first < b.first : a.second < b.second;
     });
-    int ans = 0, last = -2000000000;
+    int ans = 0;
+    T last{};
+    bool have = false;
     for (auto [l, r] : seg) {
-        if (l >= last) {
+        if (!have || l >= last) {
             ans++;
             last = r;
+            have = true;
         }
     }
     return ans;

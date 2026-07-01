@@ -1,22 +1,24 @@
- int n; cin>>n;
-vector<ll>a(n);
-for(auto &x:a) cin>>x;
-vector<ll>b(2*n);
-for(int i=0;i<2*n;i++) b[i]=a[i%n];
-vector<ll> pref(2*n+1,0);
-for(int i=1;i<=2*n;i++) pref[i]=pref[i-1]+b[i-1];
-auto cost=[&](int i,int j){ return (pref[j]-pref[i]); };
-ll best=INF;
-for(int st=0; st<n; st++){
-    vector<vector<ll>> dp(n, vector<ll>(n,0));
-    for(int len=2; len<=n; len++){
-        for(int i=0;i+len-1<n;i++){
-            int j=i+len-1;
-            dp[i][j]=INF;
-            for(int k=i;k<j;k++)
-                dp[i][j]=min(dp[i][j], dp[i][k]+dp[k+1][j]+cost(st+i, st+j+1));
+template <typename T>
+T circular_merge_cost(const vector<T>& a) {
+    int n = a.size();
+    vector<T> b(2 * n), pref(2 * n + 1);
+    for (int i = 0; i < 2 * n; i++) b[i] = a[i % n];
+    for (int i = 0; i < 2 * n; i++) pref[i + 1] = pref[i] + b[i];
+    T INF = numeric_limits<T>::max() / 4;
+    T ans = INF;
+    for (int st = 0; st < n; st++) {
+        vector dp(n, vector<T>(n));
+        for (int len = 2; len <= n; len++) {
+            for (int l = 0; l + len - 1 < n; l++) {
+                int r = l + len - 1;
+                dp[l][r] = INF;
+                for (int m = l; m < r; m++) {
+                    T cost = pref[st + r + 1] - pref[st + l];
+                    dp[l][r] = min(dp[l][r], dp[l][m] + dp[m + 1][r] + cost);
+                }
+            }
         }
+        ans = min(ans, dp[0][n - 1]);
     }
-    best=min(best, dp[0][n-1]);
+    return ans;
 }
-cout<<best<<"\n";

@@ -123,11 +123,12 @@ bool is_bipartite(const std::vector<std::vector<int>>& g) {
     return true;
 }
 
-std::vector<long long> dijkstra(int s, const std::vector<std::vector<std::pair<int, long long>>>& g) {
+template <typename T = long long>
+std::vector<T> dijkstra(int s, const std::vector<std::vector<std::pair<int, T>>>& g) {
     int n = g.size();
-    const long long INF = (long long)4e18;
-    std::vector<long long> dist(n, INF);
-    std::priority_queue<std::pair<long long, int>, std::vector<std::pair<long long, int>>, std::greater<std::pair<long long, int>>> q;
+    T INF = std::numeric_limits<T>::max() / 4;
+    std::vector<T> dist(n, INF);
+    std::priority_queue<std::pair<T, int>, std::vector<std::pair<T, int>>, std::greater<std::pair<T, int>>> q;
     dist[s] = 0;
     q.push({0, s});
     while (!q.empty()) {
@@ -165,9 +166,10 @@ std::vector<int> zero_one_bfs(int s, const std::vector<std::vector<std::pair<int
     return dist;
 }
 
-std::vector<long long> bellman_ford(int n, int s, const std::vector<std::tuple<int, int, long long>>& e) {
-    const long long INF = (long long)4e18;
-    std::vector<long long> dist(n, INF);
+template <typename T = long long>
+std::vector<T> bellman_ford(int n, int s, const std::vector<std::tuple<int, int, T>>& e) {
+    T INF = std::numeric_limits<T>::max() / 4;
+    std::vector<T> dist(n, INF);
     dist[s] = 0;
     for (int it = 0; it < n - 1; it++) {
         bool any = false;
@@ -182,17 +184,19 @@ std::vector<long long> bellman_ford(int n, int s, const std::vector<std::tuple<i
     return dist;
 }
 
-bool has_negative_cycle(const std::vector<std::tuple<int, int, long long>>& e, const std::vector<long long>& dist) {
-    const long long INF = (long long)4e18;
+template <typename T = long long>
+bool has_negative_cycle(const std::vector<std::tuple<int, int, T>>& e, const std::vector<T>& dist) {
+    T INF = std::numeric_limits<T>::max() / 4;
     for (auto [v, to, w] : e) {
         if (dist[v] != INF && dist[to] > dist[v] + w) return true;
     }
     return false;
 }
 
-void floyd(std::vector<std::vector<long long>>& d) {
+template <typename T = long long>
+void floyd(std::vector<std::vector<T>>& d) {
     int n = d.size();
-    const long long INF = (long long)4e18;
+    T INF = std::numeric_limits<T>::max() / 4;
     for (int k = 0; k < n; k++) {
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
@@ -204,7 +208,8 @@ void floyd(std::vector<std::vector<long long>>& d) {
     }
 }
 
-long long kruskal(int n, std::vector<std::tuple<long long, int, int>> e) {
+template <typename T = long long>
+T kruskal(int n, std::vector<std::tuple<T, int, int>> e) {
     std::sort(e.begin(), e.end());
     std::vector<int> p(n), sz(n, 1);
     std::iota(p.begin(), p.end(), 0);
@@ -220,19 +225,21 @@ long long kruskal(int n, std::vector<std::tuple<long long, int, int>> e) {
         sz[a] += sz[b];
         return true;
     };
-    long long ans = 0;
+    T ans = 0;
     for (auto [w, v, to] : e) {
         if (unite(v, to)) ans += w;
     }
     return ans;
 }
 
-long long prim_mst(const std::vector<std::vector<std::pair<int, long long>>>& g) {
+template <typename T = long long>
+std::pair<bool, T> prim_mst(const std::vector<std::vector<std::pair<int, T>>>& g) {
     int n = g.size();
+    if (!n) return {true, T()};
     std::vector<int> used(n);
-    std::priority_queue<std::pair<long long, int>, std::vector<std::pair<long long, int>>, std::greater<std::pair<long long, int>>> q;
+    std::priority_queue<std::pair<T, int>, std::vector<std::pair<T, int>>, std::greater<std::pair<T, int>>> q;
     q.push({0, 0});
-    long long ans = 0;
+    T ans = 0;
     int cnt = 0;
     while (!q.empty()) {
         auto [w, v] = q.top();
@@ -245,7 +252,7 @@ long long prim_mst(const std::vector<std::vector<std::pair<int, long long>>>& g)
             if (!used[to]) q.push({cost, to});
         }
     }
-    return cnt == n ? ans : -1;
+    return {cnt == n, ans};
 }
 
 std::vector<std::pair<int, int>> bridges(const std::vector<std::vector<int>>& g) {

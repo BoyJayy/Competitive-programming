@@ -1,31 +1,22 @@
-
-    int n, m;
-    cin >> n >> m;
-    vector<vector<pair<int,int>>> g(n);
-    for (int i = 0; i < m; i++) {
-        int u, v, w;
-        cin >> u >> v >> w;
-        g[u].push_back({v, w});
-        g[v].push_back({u, w});
-    }
-
-    const int INF = 1e9;
-    vector<int> key(n, INF), par(n, -1), used(n, 0);
-    priority_queue<pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>>> pq;
-    key[0] = 0;
-    pq.push({0, 0});
-    ll cost = 0;
-
-    while (!pq.empty()) {
-        auto [w, v] = pq.top(); pq.pop();
+template <typename T>
+pair<bool, T> prim_mst(const vector<vector<pair<int, T>>>& g) {
+    int n = g.size();
+    if (!n) return {true, T()};
+    vector<int> used(n);
+    priority_queue<pair<T, int>, vector<pair<T, int>>, greater<pair<T, int>>> q;
+    q.push({T(), 0});
+    T ans = T();
+    int cnt = 0;
+    while (!q.empty()) {
+        auto [w, v] = q.top();
+        q.pop();
         if (used[v]) continue;
-        used[v] = 1;
-        cost += w;
-        for (auto [to, ww] : g[v]) {
-            if (!used[to] && ww < key[to]) {
-                key[to] = ww;
-                par[to] = v;
-                pq.push({key[to], to});
-            }
+        used[v] = true;
+        ans += w;
+        cnt++;
+        for (auto [to, cost] : g[v]) {
+            if (!used[to]) q.push({cost, to});
         }
     }
+    return {cnt == n, ans};
+}

@@ -1,10 +1,12 @@
-    int n,S; 
-    cin>>n>>S;
-    vector<int> c(n); 
-    for(int i=0;i<n;i++) cin>>c[i];
-    vector<int> dp(S+1,0);
-    dp[0]=1;
-    for(int coin: c)
-        for(int s=coin;s<=S;s++)
-            if((dp[s]+=dp[s-coin])>=MOD) dp[s]-=MOD;
-    cout<<dp[S]<<"\n";
+template <typename T>
+T coin_change_count(const vector<int>& c, int s, T mod) {
+    vector<T> dp(s + 1);
+    dp[0] = 1;
+    for (int coin : c) {
+        for (int x = coin; x <= s; x++) {
+            dp[x] += dp[x - coin];
+            if (dp[x] >= mod) dp[x] -= mod;
+        }
+    }
+    return dp[s];
+}

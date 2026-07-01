@@ -110,10 +110,11 @@ std::pair<int, int> tree_diameter(const std::vector<std::vector<int>>& g) {
     return {a, b};
 }
 
-std::vector<long long> sum_dist_tree(const std::vector<std::vector<int>>& g, int root = 0) {
+template <typename T = long long>
+std::vector<T> sum_dist_tree(const std::vector<std::vector<int>>& g, int root = 0) {
     int n = g.size();
     std::vector<int> sz(n);
-    std::vector<long long> sub(n), ans(n);
+    std::vector<T> sub(n), ans(n);
     std::function<void(int, int)> dfs1 = [&](int v, int p) {
         sz[v] = 1;
         for (int to : g[v]) {
@@ -126,7 +127,7 @@ std::vector<long long> sum_dist_tree(const std::vector<std::vector<int>>& g, int
     std::function<void(int, int)> dfs2 = [&](int v, int p) {
         for (int to : g[v]) {
             if (to == p) continue;
-            ans[to] = ans[v] + n - 2LL * sz[to];
+            ans[to] = ans[v] + (T)n - (T)2 * sz[to];
             dfs2(to, v);
         }
     };

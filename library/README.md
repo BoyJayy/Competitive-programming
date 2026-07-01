@@ -10,7 +10,8 @@ The rule is simple:
 - `library/cplib/*.hpp` are topic headers.
 - Topic headers contain only algorithms and data structures inside `namespace cplib`.
 - Topic headers do not contain `#include`, `#define`, global template macros, or `using namespace std`.
-- Graph algorithms use normal CP containers like `vector<vector<int>>`, `vector<pair<int,long long>>`, and `tuple` instead of decorative `Edge` structs.
+- Graph algorithms use normal CP containers like `vector<vector<int>>`, `vector<pair<int,T>>`, and `tuple` instead of decorative `Edge` structs.
+- Value types are templated where it helps: weights, costs, sums, DP values, capacities, coordinates. Vertices, positions, masks, and sizes stay `int`.
 
 ### Quick start
 
@@ -62,6 +63,21 @@ Library headers are cleaner than snippets:
 - no classes where a function is enough;
 - no standalone `main`.
 
+### Generic types
+
+Most value-bearing algorithms are templates:
+
+```cpp
+vector<vector<pair<int, double>>> g(n);
+auto dist = cplib::dijkstra<double>(0, g);
+
+cplib::Fenwick<long long> fw(n);
+cplib::Dinic<int> flow(n);
+cplib::PointT<long long> p{3, 4};
+```
+
+Do not template what is naturally an index: vertices, array positions, bitmasks, and component ids are still `int`.
+
 ### Compile check
 
 ```bash
@@ -106,6 +122,20 @@ cplib::DSU dsu(n);
 ### Важная идея
 
 Библиотека - подключаемая и аккуратная. Сниппеты - быстрые голые фрагменты для копирования. Контестные решения - отдельно, их не надо превращать в библиотеку.
+
+### Универсальные типы
+
+Там, где тип реально является значением, он шаблонный: веса, стоимости, суммы, DP-значения, capacity, координаты.
+
+```cpp
+vector<vector<pair<int, double>>> g(n);
+auto dist = cplib::dijkstra<double>(0, g);
+
+cplib::Fenwick<long long> fw(n);
+cplib::Dinic<int> din(n);
+```
+
+Индексы вершин, позиции в массиве, маски и размеры остаются `int`: это проще и привычнее для CP.
 
 ### Как добавлять новый алгоритм
 

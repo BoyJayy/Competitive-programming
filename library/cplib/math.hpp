@@ -2,7 +2,8 @@
 
 namespace cplib {
 
-long long gcd_ll(long long a, long long b) {
+template <typename T>
+T gcd_ll(T a, T b) {
     while (b) {
         a %= b;
         std::swap(a, b);
@@ -10,25 +11,28 @@ long long gcd_ll(long long a, long long b) {
     return a;
 }
 
-long long lcm_ll(long long a, long long b) {
+template <typename T>
+T lcm_ll(T a, T b) {
     return a / gcd_ll(a, b) * b;
 }
 
-long long ext_gcd(long long a, long long b, long long& x, long long& y) {
+template <typename T>
+T ext_gcd(T a, T b, T& x, T& y) {
     if (!b) {
         x = 1;
         y = 0;
         return a;
     }
-    long long x1, y1;
-    long long g = ext_gcd(b, a % b, x1, y1);
+    T x1, y1;
+    T g = ext_gcd(b, a % b, x1, y1);
     x = y1;
     y = x1 - y1 * (a / b);
     return g;
 }
 
-long long binpow(long long a, long long b) {
-    long long ans = 1;
+template <typename T, typename E>
+T binpow(T a, E b) {
+    T ans = 1;
     while (b) {
         if (b & 1) ans *= a;
         a *= a;
@@ -37,8 +41,9 @@ long long binpow(long long a, long long b) {
     return ans;
 }
 
-long long binpow_mod(long long a, long long b, long long mod) {
-    long long ans = 1 % mod;
+template <typename T, typename E>
+T binpow_mod(T a, E b, T mod) {
+    T ans = 1 % mod;
     a %= mod;
     while (b) {
         if (b & 1) ans = ans * a % mod;
@@ -48,29 +53,33 @@ long long binpow_mod(long long a, long long b, long long mod) {
     return ans;
 }
 
-long long norm(long long x, long long mod) {
+template <typename T>
+T norm(T x, T mod) {
     x %= mod;
     if (x < 0) x += mod;
     return x;
 }
 
-long long inv_prime(long long x, long long mod) {
+template <typename T>
+T inv_prime(T x, T mod) {
     return binpow_mod(x, mod - 2, mod);
 }
 
-long long inv_any(long long a, long long mod) {
-    long long x, y;
-    long long g = ext_gcd(a, mod, x, y);
+template <typename T>
+T inv_any(T a, T mod) {
+    T x, y;
+    T g = ext_gcd(a, mod, x, y);
     if (g != 1) return -1;
     return norm(x, mod);
 }
 
-std::pair<long long, long long> crt(long long a1, long long m1, long long a2, long long m2) {
-    long long x, y;
-    long long g = ext_gcd(m1, m2, x, y);
+template <typename T>
+std::pair<T, T> crt(T a1, T m1, T a2, T m2) {
+    T x, y;
+    T g = ext_gcd(m1, m2, x, y);
     if ((a2 - a1) % g) return {0, -1};
-    long long lcm = m1 / g * m2;
-    long long t = norm((a2 - a1) / g * x, m2 / g);
+    T lcm = m1 / g * m2;
+    T t = norm((a2 - a1) / g * x, m2 / g);
     return {norm(a1 + m1 * t, lcm), lcm};
 }
 
@@ -89,9 +98,10 @@ std::vector<int> sieve(int n) {
     return primes;
 }
 
-std::vector<std::pair<long long, int>> factorize(long long x) {
-    std::vector<std::pair<long long, int>> f;
-    for (long long p = 2; p * p <= x; p++) {
+template <typename T = long long>
+std::vector<std::pair<T, int>> factorize(T x) {
+    std::vector<std::pair<T, int>> f;
+    for (T p = 2; p * p <= x; p++) {
         if (x % p) continue;
         int cnt = 0;
         while (x % p == 0) {
@@ -104,8 +114,9 @@ std::vector<std::pair<long long, int>> factorize(long long x) {
     return f;
 }
 
-long long phi(long long n) {
-    long long ans = n;
+template <typename T = long long>
+T phi(T n) {
+    T ans = n;
     for (auto [p, cnt] : factorize(n)) {
         ans = ans / p * (p - 1);
     }
@@ -134,9 +145,10 @@ std::vector<int> mobius(int n) {
     return mu;
 }
 
-std::vector<long long> divisors(long long n) {
-    std::vector<long long> d;
-    for (long long x = 1; x * x <= n; x++) {
+template <typename T = long long>
+std::vector<T> divisors(T n) {
+    std::vector<T> d;
+    for (T x = 1; x * x <= n; x++) {
         if (n % x) continue;
         d.push_back(x);
         if (x * x != n) d.push_back(n / x);
@@ -145,27 +157,30 @@ std::vector<long long> divisors(long long n) {
     return d;
 }
 
+template <typename T = long long>
 struct Comb {
-    long long mod;
-    std::vector<long long> fact, invfact;
+    T mod;
+    std::vector<T> fact, invfact;
 
-    Comb(int n, long long mod): mod(mod), fact(n + 1, 1), invfact(n + 1, 1) {
+    Comb(int n, T mod): mod(mod), fact(n + 1, 1), invfact(n + 1, 1) {
         for (int i = 1; i <= n; i++) fact[i] = fact[i - 1] * i % mod;
         invfact[n] = inv_prime(fact[n], mod);
         for (int i = n; i; i--) invfact[i - 1] = invfact[i] * i % mod;
     }
 
-    long long C(int n, int k) {
+    T C(int n, int k) {
         if (k < 0 || k > n) return 0;
         return fact[n] * invfact[k] % mod * invfact[n - k] % mod;
     }
 };
 
-using Matrix = std::vector<std::vector<long long>>;
+template <typename T = long long>
+using Matrix = std::vector<std::vector<T>>;
 
-Matrix mul(Matrix a, Matrix b, long long mod) {
+template <typename T = long long>
+Matrix<T> mul(Matrix<T> a, Matrix<T> b, T mod) {
     int n = a.size();
-    Matrix c(n, std::vector<long long>(n));
+    Matrix<T> c(n, std::vector<T>(n));
     for (int i = 0; i < n; i++) {
         for (int k = 0; k < n; k++) {
             for (int j = 0; j < n; j++) {
@@ -176,9 +191,10 @@ Matrix mul(Matrix a, Matrix b, long long mod) {
     return c;
 }
 
-Matrix mpow(Matrix a, long long b, long long mod) {
+template <typename T = long long, typename E = long long>
+Matrix<T> mpow(Matrix<T> a, E b, T mod) {
     int n = a.size();
-    Matrix ans(n, std::vector<long long>(n));
+    Matrix<T> ans(n, std::vector<T>(n));
     for (int i = 0; i < n; i++) ans[i][i] = 1;
     while (b) {
         if (b & 1) ans = mul(ans, a, mod);
@@ -220,7 +236,8 @@ bool is_prime_ll(long long n) {
     return true;
 }
 
-void ntt(std::vector<long long>& a, bool inv, long long mod = 998244353, long long root = 3) {
+template <typename T = long long>
+void ntt(std::vector<T>& a, bool inv, T mod = 998244353, T root = 3) {
     int n = a.size();
     for (int i = 1, j = 0; i < n; i++) {
         int bit = n >> 1;
@@ -229,13 +246,13 @@ void ntt(std::vector<long long>& a, bool inv, long long mod = 998244353, long lo
         if (i < j) std::swap(a[i], a[j]);
     }
     for (int len = 2; len <= n; len <<= 1) {
-        long long wlen = binpow_mod(root, (mod - 1) / len, mod);
+        T wlen = binpow_mod(root, (mod - 1) / len, mod);
         if (inv) wlen = inv_prime(wlen, mod);
         for (int i = 0; i < n; i += len) {
-            long long w = 1;
+            T w = 1;
             for (int j = 0; j < len / 2; j++) {
-                long long u = a[i + j];
-                long long v = a[i + j + len / 2] * w % mod;
+                T u = a[i + j];
+                T v = a[i + j + len / 2] * w % mod;
                 a[i + j] = (u + v) % mod;
                 a[i + j + len / 2] = (u - v + mod) % mod;
                 w = w * wlen % mod;
@@ -243,17 +260,17 @@ void ntt(std::vector<long long>& a, bool inv, long long mod = 998244353, long lo
         }
     }
     if (inv) {
-        long long ninv = inv_prime(n, mod);
-        for (long long& x : a) x = x * ninv % mod;
+        T ninv = inv_prime((T)n, mod);
+        for (T& x : a) x = x * ninv % mod;
     }
 }
 
-std::vector<long long> convolution_mod(std::vector<long long> a, std::vector<long long> b,
-                                       long long mod = 998244353, long long root = 3) {
+template <typename T = long long>
+std::vector<T> convolution_mod(std::vector<T> a, std::vector<T> b, T mod = 998244353, T root = 3) {
     if (a.empty() || b.empty()) return {};
     int need = a.size() + b.size() - 1;
     if (std::min(a.size(), b.size()) < 64) {
-        std::vector<long long> c(need);
+        std::vector<T> c(need);
         for (int i = 0; i < (int)a.size(); i++) {
             for (int j = 0; j < (int)b.size(); j++) {
                 c[i + j] = (c[i + j] + a[i] * b[j]) % mod;
@@ -273,35 +290,37 @@ std::vector<long long> convolution_mod(std::vector<long long> a, std::vector<lon
     return a;
 }
 
-std::vector<long long> poly_inv(const std::vector<long long>& a, int n, long long mod = 998244353, long long root = 3) {
-    std::vector<long long> res(1, inv_prime(a[0], mod));
+template <typename T = long long>
+std::vector<T> poly_inv(const std::vector<T>& a, int n, T mod = 998244353, T root = 3) {
+    std::vector<T> res(1, inv_prime(a[0], mod));
     while ((int)res.size() < n) {
         int m = res.size() * 2;
-        std::vector<long long> cur(a.begin(), a.begin() + std::min((int)a.size(), m));
-        std::vector<long long> prod = convolution_mod(convolution_mod(res, res, mod, root), cur, mod, root);
+        std::vector<T> cur(a.begin(), a.begin() + std::min((int)a.size(), m));
+        std::vector<T> prod = convolution_mod(convolution_mod(res, res, mod, root), cur, mod, root);
         res.resize(m);
         for (int i = 0; i < m; i++) {
-            long long val = i < (int)prod.size() ? prod[i] : 0;
-            res[i] = norm(2 * res[i] - val, mod);
+            T val = i < (int)prod.size() ? prod[i] : 0;
+            res[i] = norm((T)2 * res[i] - val, mod);
         }
     }
     res.resize(n);
     return res;
 }
 
-long long lagrange(const std::vector<long long>& y, long long x, long long mod) {
+template <typename T = long long>
+T lagrange(const std::vector<T>& y, long long x, T mod) {
     int n = y.size() - 1;
     if (x <= n) return norm(y[x], mod);
-    std::vector<long long> pref(n + 2, 1), suf(n + 2, 1), fact(n + 1, 1), invfact(n + 1, 1);
+    std::vector<T> pref(n + 2, 1), suf(n + 2, 1), fact(n + 1, 1), invfact(n + 1, 1);
     for (int i = 0; i <= n; i++) fact[i] = (i ? fact[i - 1] * i % mod : 1);
     invfact[n] = inv_prime(fact[n], mod);
     for (int i = n; i; i--) invfact[i - 1] = invfact[i] * i % mod;
     for (int i = 0; i <= n; i++) pref[i + 1] = pref[i] * norm(x - i, mod) % mod;
     for (int i = n; i >= 0; i--) suf[i] = suf[i + 1] * norm(x - i, mod) % mod;
-    long long ans = 0;
+    T ans = 0;
     for (int i = 0; i <= n; i++) {
-        long long num = pref[i] * suf[i + 1] % mod;
-        long long den = invfact[i] * invfact[n - i] % mod;
+        T num = pref[i] * suf[i + 1] % mod;
+        T den = invfact[i] * invfact[n - i] % mod;
         if ((n - i) & 1) den = mod - den;
         ans = (ans + norm(y[i], mod) * num % mod * den) % mod;
     }

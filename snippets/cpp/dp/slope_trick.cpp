@@ -1,39 +1,39 @@
+template <typename T>
 struct SlopeTrick {
-    ll addL=0, addR=0;
-    priority_queue<ll> L;
-    priority_queue<ll, vector<ll>, greater<ll>> R;
+    T mn = T();
+    priority_queue<T> L;
+    priority_queue<T, vector<T>, greater<T>> R;
 
-    void push_left(ll x){
-        if(!L.empty() && x < L.top()){
-            L.push(x);
-            x = L.top(); L.pop();
+    void add_x_minus_a(T a) {
+        if (!L.empty() && L.top() > a) {
+            mn += L.top() - a;
+            R.push(L.top());
+            L.pop();
+            L.push(a);
         }
-        R.push(x);
-    }
-    void push_right(ll x){
-        if(!R.empty() && x > R.top()){
-            R.push(x);
-            x = R.top(); R.pop();
+        else {
+            R.push(a);
         }
-        L.push(x);
     }
 
-    void add_abs(ll a){
-        push_left(a - addL);
-        push_right(a - addR);
+    void add_a_minus_x(T a) {
+        if (!R.empty() && R.top() < a) {
+            mn += a - R.top();
+            L.push(R.top());
+            R.pop();
+            R.push(a);
+        }
+        else {
+            L.push(a);
+        }
     }
 
-    void shift_left(ll c){ addL += c; }
-    void shift_right(ll c){ addR += c; }
+    void add_abs(T a) {
+        add_x_minus_a(a);
+        add_a_minus_x(a);
+    }
 
-    ll min_f() const { return 0; }
-
-    ll eval(ll x){
-        ll res=0;
-        priority_queue<ll> Lc=L; 
-        priority_queue<ll, vector<ll>, greater<ll>> Rc=R;
-        while(!Lc.empty() && Lc.top() + addL > x){ res += Lc.top()+addL - x; Lc.pop(); }
-        while(!Rc.empty() && Rc.top() + addR < x){ res += x - (Rc.top()+addR); Rc.pop(); }
-        return res;
+    T min_f() {
+        return mn;
     }
 };

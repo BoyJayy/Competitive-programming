@@ -2,9 +2,10 @@
 
 namespace cplib {
 
-long long min_stair_cost(const std::vector<int>& a) {
+template <typename T = long long>
+T min_stair_cost(const std::vector<T>& a) {
     int n = a.size();
-    std::vector<long long> dp(n + 1, (long long)4e18);
+    std::vector<T> dp(n + 1, std::numeric_limits<T>::max() / 4);
     dp[0] = 0;
     for (int i = 0; i < n; i++) {
         dp[i + 1] = std::min(dp[i + 1], dp[i] + a[i]);
@@ -13,9 +14,10 @@ long long min_stair_cost(const std::vector<int>& a) {
     return dp[n];
 }
 
-int knapsack_01(const std::vector<int>& w, const std::vector<int>& cost, int s) {
+template <typename T = int>
+T knapsack_01(const std::vector<int>& w, const std::vector<T>& cost, int s) {
     int n = w.size();
-    std::vector<int> dp(s + 1);
+    std::vector<T> dp(s + 1);
     for (int i = 0; i < n; i++) {
         for (int j = s; j >= w[i]; j--) {
             dp[j] = std::max(dp[j], dp[j - w[i]] + cost[i]);
@@ -36,9 +38,10 @@ int subset_sum_best(const std::vector<int>& a, int s) {
     return 0;
 }
 
-int lis_len(const std::vector<int>& a) {
-    std::vector<int> dp;
-    for (int x : a) {
+template <typename T>
+int lis_len(const std::vector<T>& a) {
+    std::vector<T> dp;
+    for (T x : a) {
         auto it = std::lower_bound(dp.begin(), dp.end(), x);
         if (it == dp.end()) dp.push_back(x);
         else *it = x;
@@ -46,7 +49,8 @@ int lis_len(const std::vector<int>& a) {
     return dp.size();
 }
 
-std::pair<int, int> lis_count(const std::vector<int>& a, int mod) {
+template <typename T>
+std::pair<int, int> lis_count(const std::vector<T>& a, int mod) {
     int n = a.size();
     std::vector<int> dp(n, 1), cnt(n, 1);
     int len = 0, ways = 0;
@@ -75,9 +79,11 @@ std::pair<int, int> lis_count(const std::vector<int>& a, int mod) {
     return {len, ways};
 }
 
-std::vector<int> lis_restore(const std::vector<int>& a) {
+template <typename T>
+std::vector<T> lis_restore(const std::vector<T>& a) {
     int n = a.size();
-    std::vector<int> dp, id, p(n, -1);
+    std::vector<T> dp;
+    std::vector<int> id, p(n, -1);
     for (int i = 0; i < n; i++) {
         int pos = std::lower_bound(dp.begin(), dp.end(), a[i]) - dp.begin();
         int len = dp.size();
@@ -91,15 +97,16 @@ std::vector<int> lis_restore(const std::vector<int>& a) {
         }
         if (pos) p[i] = id[pos - 1];
     }
-    std::vector<int> ans;
+    std::vector<T> ans;
     for (int v = id.back(); v != -1; v = p[v]) ans.push_back(a[v]);
     std::reverse(ans.begin(), ans.end());
     return ans;
 }
 
-long long min_grid_path(const std::vector<std::vector<int>>& a) {
+template <typename T = long long>
+T min_grid_path(const std::vector<std::vector<T>>& a) {
     int n = a.size(), m = a[0].size();
-    std::vector<std::vector<long long>> dp(n, std::vector<long long>(m, (long long)4e18));
+    std::vector<std::vector<T>> dp(n, std::vector<T>(m, std::numeric_limits<T>::max() / 4));
     dp[0][0] = a[0][0];
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
@@ -110,22 +117,24 @@ long long min_grid_path(const std::vector<std::vector<int>>& a) {
     return dp[n - 1][m - 1];
 }
 
-int edit_distance(const std::string& a, const std::string& b) {
+template <typename T = int>
+T edit_distance(const std::string& a, const std::string& b, T ins = 1, T del = 1, T sub = 1) {
     int n = a.size(), m = b.size();
-    std::vector<std::vector<int>> dp(n + 1, std::vector<int>(m + 1));
-    for (int i = 0; i <= n; i++) dp[i][0] = i;
-    for (int j = 0; j <= m; j++) dp[0][j] = j;
+    std::vector<std::vector<T>> dp(n + 1, std::vector<T>(m + 1));
+    for (int i = 0; i <= n; i++) dp[i][0] = i * del;
+    for (int j = 0; j <= m; j++) dp[0][j] = j * ins;
     for (int i = 1; i <= n; i++) {
         for (int j = 1; j <= m; j++) {
-            dp[i][j] = std::min({dp[i - 1][j] + 1,
-                                 dp[i][j - 1] + 1,
-                                 dp[i - 1][j - 1] + (a[i - 1] != b[j - 1])});
+                dp[i][j] = std::min({dp[i - 1][j] + del,
+                                 dp[i][j - 1] + ins,
+                                 dp[i - 1][j - 1] + (a[i - 1] != b[j - 1] ? sub : T())});
         }
     }
     return dp[n][m];
 }
 
-void sos_sum(std::vector<long long>& f, int k) {
+template <typename T>
+void sos_sum(std::vector<T>& f, int k) {
     for (int b = 0; b < k; b++) {
         for (int mask = 0; mask < (1 << k); mask++) {
             if (mask >> b & 1) f[mask] += f[mask ^ (1 << b)];
@@ -133,16 +142,17 @@ void sos_sum(std::vector<long long>& f, int k) {
     }
 }
 
-long long count_digit_sum(long long n, int need) {
+template <typename T = long long>
+T count_digit_sum(long long n, int need) {
     std::string s = std::to_string(n);
     int len = s.size();
-    std::vector dp(len + 1, std::vector(need + 1, std::vector<long long>(2, -1)));
-    std::function<long long(int, int, int)> go = [&](int pos, int sum, int tight) {
-        if (sum < 0) return 0LL;
-        if (pos == len) return sum == 0 ? 1LL : 0LL;
-        long long& res = dp[pos][sum][tight];
-        if (res != -1) return res;
-        res = 0;
+    std::vector dp(len + 1, std::vector(need + 1, std::vector<T>(2, -1)));
+    std::function<T(int, int, int)> go = [&](int pos, int sum, int tight) {
+        if (sum < 0) return T();
+        if (pos == len) return sum == 0 ? (T)1 : T();
+        T& res = dp[pos][sum][tight];
+        if (res != (T)-1) return res;
+        res = T();
         int up = tight ? s[pos] - '0' : 9;
         for (int d = 0; d <= up; d++) {
             res += go(pos + 1, sum - d, tight && d == up);
@@ -152,16 +162,17 @@ long long count_digit_sum(long long n, int need) {
     return go(0, need, 1);
 }
 
+template <typename T = long long, typename F = std::function<T(int, int)>>
 void divide_conquer_layer(int l, int r, int optl, int optr,
-                          const std::vector<long long>& prev,
-                          std::vector<long long>& cur,
-                          const std::function<long long(int, int)>& cost) {
+                          const std::vector<T>& prev,
+                          std::vector<T>& cur,
+                          const F& cost) {
     if (l > r) return;
     int mid = (l + r) / 2;
-    long long best = (long long)4e18;
+    T best = std::numeric_limits<T>::max() / 4;
     int opt = optl;
     for (int j = optl; j <= std::min(mid, optr); j++) {
-        long long val = prev[j] + cost(j, mid);
+        T val = prev[j] + cost(j, mid);
         if (val < best) {
             best = val;
             opt = j;
@@ -172,9 +183,10 @@ void divide_conquer_layer(int l, int r, int optl, int optr,
     divide_conquer_layer(mid + 1, r, opt, optr, prev, cur, cost);
 }
 
+template <typename T = long long>
 struct CHTMax {
     struct Line {
-        long long k, b;
+        T k, b;
         long double x;
     };
 
@@ -184,7 +196,7 @@ struct CHTMax {
         return (long double)(b.b - a.b) / (a.k - b.k);
     }
 
-    void add(long long k, long long b) {
+    void add(T k, T b) {
         Line cur{k, b, -1e30};
         while (!q.empty() && q.back().k == k && q.back().b <= b) q.pop_back();
         if (!q.empty() && q.back().k == k) return;
@@ -197,18 +209,19 @@ struct CHTMax {
         q.push_back(cur);
     }
 
-    long long get(long long x) {
+    T get(T x) {
         while ((int)q.size() >= 2 && q[1].x <= x) q.pop_front();
         return q.front().k * x + q.front().b;
     }
 };
 
+template <typename T = long long>
 struct SlopeTrick {
-    long long mn = 0;
-    std::priority_queue<long long> L;
-    std::priority_queue<long long, std::vector<long long>, std::greater<long long>> R;
+    T mn = 0;
+    std::priority_queue<T> L;
+    std::priority_queue<T, std::vector<T>, std::greater<T>> R;
 
-    void add_x_minus_a(long long a) {
+    void add_x_minus_a(T a) {
         if (!L.empty() && L.top() > a) {
             mn += L.top() - a;
             R.push(L.top());
@@ -220,7 +233,7 @@ struct SlopeTrick {
         }
     }
 
-    void add_a_minus_x(long long a) {
+    void add_a_minus_x(T a) {
         if (!R.empty() && R.top() < a) {
             mn += a - R.top();
             L.push(R.top());
@@ -232,12 +245,12 @@ struct SlopeTrick {
         }
     }
 
-    void add_abs(long long a) {
+    void add_abs(T a) {
         add_x_minus_a(a);
         add_a_minus_x(a);
     }
 
-    long long min_f() {
+    T min_f() {
         return mn;
     }
 };

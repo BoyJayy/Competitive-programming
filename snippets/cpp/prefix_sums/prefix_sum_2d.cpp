@@ -1,7 +1,8 @@
-vector<vector<int>> computePrefixSum(const vector<vector<int>> &A) {
+template <typename T>
+vector<vector<T>> computePrefixSum(const vector<vector<T>> &A) {
     int n = A.size();
     int m = A[0].size();
-    vector<vector<int>> P(n, vector<int>(m, 0));
+    vector<vector<T>> P(n, vector<T>(m, 0));
 
     for (int i = 0; i < n; i++) {
         for (int j = 0; j < m; j++) {
@@ -16,8 +17,9 @@ vector<vector<int>> computePrefixSum(const vector<vector<int>> &A) {
     }
     return P;
 }
-int submatrixSum(const vector<vector<int>> &P, int x1, int y1, int x2, int y2) {
-    int sum = P[x2][y2];
+template <typename T>
+T submatrixSum(const vector<vector<T>> &P, int x1, int y1, int x2, int y2) {
+    T sum = P[x2][y2];
     if (x1 > 0)
         sum -= P[x1 - 1][y2];
     if (y1 > 0)

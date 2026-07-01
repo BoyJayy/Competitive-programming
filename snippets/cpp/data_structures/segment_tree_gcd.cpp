@@ -1,38 +1,32 @@
-struct Tree {
-    vec<int> nodes;
-    int size = 1;
-    Tree(){};
-    Tree (vec<int>& a) {
-        while (size < a.size()) size *= 2;
-        nodes.resize(size * 2, 0);
-        for (int i = 0; i < a.size(); i++) {
-            nodes[i + size] = a[i];
-        }
-        for (int i = size - 1; i >= 1; i--) {
-            nodes[i] = __gcd(nodes[i * 2], nodes[i * 2 + 1]);
-        }
+template <typename T>
+struct SegTreeGcd {
+    int n;
+    vector<T> t;
+
+    SegTreeGcd(const vector<T>& a = {}) {
+        if (!a.empty()) build(a);
     }
-    int get_gcd(int now, int l, int r, int lq, int rq) {
-        if (lq <= l && rq >= r) {
-            return nodes[now];
-        }
-        if (l >= rq || r <= lq) {
-            return 0;
-        }
-        int r_s = get_gcd(now * 2 + 1, (l + r) / 2, r, lq, rq);
-        int l_s = get_gcd(now * 2, l, (l + r) / 2, lq, rq);
-        return __gcd(r_s, l_s);
+
+    void build(const vector<T>& a) {
+        n = 1;
+        while (n < (int)a.size()) n <<= 1;
+        t.assign(2 * n, T());
+        for (int i = 0; i < (int)a.size(); i++) t[i + n] = a[i];
+        for (int i = n - 1; i; i--) t[i] = gcd(t[i << 1], t[i << 1 | 1]);
     }
-    void update(int num, int now, int l, int r, int lq, int rq) {
-        if (lq <= l && rq >= r) {
-            nodes[now] = num;
-            return;
+
+    void set_val(int pos, T x) {
+        pos += n;
+        t[pos] = x;
+        for (pos >>= 1; pos; pos >>= 1) t[pos] = gcd(t[pos << 1], t[pos << 1 | 1]);
+    }
+
+    T get(int l, int r) {
+        T ans = T();
+        for (l += n, r += n + 1; l < r; l >>= 1, r >>= 1) {
+            if (l & 1) ans = gcd(ans, t[l++]);
+            if (r & 1) ans = gcd(ans, t[--r]);
         }
-        if (l >= rq || r <= lq) {
-            return;
-        }
-        update(num, now * 2 + 1, (l + r) / 2, r, lq, rq);
-        update(num, now * 2, l, (l + r) / 2, lq, rq);
-        nodes[now] = __gcd(nodes[now * 2], nodes[now * 2 + 1]);
+        return ans;
     }
 };

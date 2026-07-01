@@ -1,4 +1,5 @@
-int bubble_sort_swaps(vector<int>& a) {
+template <typename T>
+int bubble_sort_swaps(vector<T>& a) {
     int cnt = 0;
     int n = a.size();
     for (int i = 0; i < n; i++) {

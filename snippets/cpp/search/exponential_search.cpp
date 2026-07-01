@@ -1,4 +1,5 @@
-int exponential_search(const vector<ll>& a, ll x) {
+template <typename T, typename U>
+int exponential_search(const vector<T>& a, U x) {
     if (a.empty()) return -1;
     if (a[0] == x) return 0;
     int n = (int)a.size();

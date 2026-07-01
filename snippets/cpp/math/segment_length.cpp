@@ -1,5 +1,6 @@
-long double segment_length(long double x1, long double y1, long double x2, long double y2) {
+template <typename T>
+long double segment_length(T x1, T y1, T x2, T y2) {
     long double dx = x1 - x2;
     long double dy = y1 - y2;
-    return sqrtl(dx * dx + dy * dy);
+    return sqrt(dx * dx + dy * dy);
 }

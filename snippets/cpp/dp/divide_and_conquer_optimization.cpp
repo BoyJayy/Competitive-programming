@@ -1,22 +1,17 @@
-const ll INF=(ll)4e18;
-
-int n, K;
-vector<ll> pref;
-
-ll C(int l,int r){
-    ll s = pref[r]-pref[l-1];
-    return s*s;
-}
-
-void solve_layer(int k, int L, int R, int optL, int optR, vector<ll>& prev, vector<ll>& cur){
-    if(L>R) return;
-    int mid=(L+R)>>1, opt=-1;
-    ll best=INF;
-    for(int j=optL;j<=min(mid-1,optR);j++){
-        ll v = prev[j] + C(j+1, mid);
-        if(v<best){ best=v; opt=j; }
+template <typename T, typename F>
+void solve_layer(int l, int r, int optl, int optr, const vector<T>& prev, vector<T>& cur, F cost) {
+    if (l > r) return;
+    int mid = (l + r) / 2;
+    T best = numeric_limits<T>::max() / 4;
+    int opt = optl;
+    for (int j = optl; j <= min(mid, optr); j++) {
+        T val = prev[j] + cost(j, mid);
+        if (val < best) {
+            best = val;
+            opt = j;
+        }
     }
-    cur[mid]=best;
-    solve_layer(k, L, mid-1, optL, opt, prev, cur);
-    solve_layer(k, mid+1, R, opt, optR, prev, cur);
+    cur[mid] = best;
+    solve_layer(l, mid - 1, optl, opt, prev, cur, cost);
+    solve_layer(mid + 1, r, opt, optr, prev, cur, cost);
 }

@@ -1,56 +1,62 @@
+template <typename T>
 struct Dinic {
-    struct E { int to; ll c; int rev; };
-    int n, s, t;
+    struct E {
+        int to, rev;
+        T cap;
+    };
+
+    int n;
     vector<vector<E>> g;
-    vector<int> lvl, it;
+    vector<int> d, ptr;
 
-    Dinic(int n) : n(n), g(n), lvl(n), it(n) {}
+    Dinic(int n): n(n), g(n), d(n), ptr(n) {}
 
-    void add_edge(int u, int v, ll c) {
-        E a{v, c, (int)g[v].size()};
-        E b{u, 0, (int)g[u].size()};
-        g[u].push_back(a);
-        g[v].push_back(b);
+    void add_edge(int v, int to, T cap) {
+        E a{to, (int)g[to].size(), cap};
+        E b{v, (int)g[v].size(), T()};
+        g[v].push_back(a);
+        g[to].push_back(b);
     }
 
-    bool bfs() {
-        fill(lvl.begin(), lvl.end(), -1);
+    bool bfs(int s, int t) {
+        fill(d.begin(), d.end(), -1);
         queue<int> q;
-        lvl[s] = 0;
+        d[s] = 0;
         q.push(s);
         while (!q.empty()) {
-            int v = q.front(); q.pop();
-            for (auto &e : g[v]) if (e.c > 0 && lvl[e.to] == -1) {
-                lvl[e.to] = lvl[v] + 1;
-                q.push(e.to);
-            }
-        }
-        return lvl[t] != -1;
-    }
-
-    ll dfs(int v, ll f) {
-        if (v == t || f == 0) return f;
-        for (int &i = it[v]; i < (int)g[v].size(); i++) {
-            auto &e = g[v][i];
-            if (e.c > 0 && lvl[e.to] == lvl[v] + 1) {
-                ll p = dfs(e.to, min(f, e.c));
-                if (p) {
-                    e.c -= p;
-                    g[e.to][e.rev].c += p;
-                    return p;
+            int v = q.front();
+            q.pop();
+            for (auto e : g[v]) {
+                if (e.cap > T() && d[e.to] == -1) {
+                    d[e.to] = d[v] + 1;
+                    q.push(e.to);
                 }
             }
         }
-        return 0;
+        return d[t] != -1;
     }
 
-    ll maxflow(int S, int T) {
-        s = S; t = T;
-        ll flow = 0, add;
-        while (bfs()) {
-            fill(it.begin(), it.end(), 0);
-            while ((add = dfs(s, (ll)4e18))) flow += add;
+    T dfs(int v, int t, T pushed) {
+        if (!pushed || v == t) return pushed;
+        for (int& cid = ptr[v]; cid < (int)g[v].size(); cid++) {
+            E& e = g[v][cid];
+            if (e.cap <= T() || d[e.to] != d[v] + 1) continue;
+            T tr = dfs(e.to, t, min(pushed, e.cap));
+            if (!tr) continue;
+            e.cap -= tr;
+            g[e.to][e.rev].cap += tr;
+            return tr;
         }
-        return flow;
+        return T();
+    }
+
+    T flow(int s, int t) {
+        T ans = T();
+        T inf = numeric_limits<T>::max() / 4;
+        while (bfs(s, t)) {
+            fill(ptr.begin(), ptr.end(), 0);
+            while (T pushed = dfs(s, t, inf)) ans += pushed;
+        }
+        return ans;
     }
 };

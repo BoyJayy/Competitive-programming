@@ -75,7 +75,7 @@ For a single topic:
 #include "library/cplib/graph.hpp"
 ```
 
-The algorithm headers live inside `namespace cplib`. Use `snippets/cpp/` only when you want a raw contest fragment to paste by hand.
+The algorithm headers live inside `namespace cplib`. Value types are templated where it matters (`dijkstra<double>`, `Fenwick<long long>`, `Dinic<int>`), while vertices and indices stay plain `int`. Use `snippets/cpp/` only when you want a raw contest fragment to paste by hand.
 
 Compile a solution:
 
@@ -140,7 +140,7 @@ g++ -std=c++17 -O2 -pipe -Wall -Wextra -o main main.cpp
 
 ### Стиль
 
-В решениях и сниппетах стиль короткий и авторский. В `library/cplib` стиль чуть чище: без `#define`, без `main`, без лишних `Edge`-структур, всё лежит в `namespace cplib` и подключается как обычная библиотека.
+В решениях и сниппетах стиль короткий и авторский. В `library/cplib` стиль чуть чище: без `#define`, без `main`, без лишних `Edge`-структур, всё лежит в `namespace cplib` и подключается как обычная библиотека. Веса, суммы, стоимости, capacity и координаты шаблонные там, где это реально полезно; индексы и вершины остаются `int`.
 
 ### Навигация
 

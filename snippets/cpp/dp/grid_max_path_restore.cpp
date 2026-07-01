@@ -1,4 +1,5 @@
-pair<int, vector<char>> grid_max_path_restore(vector<vector<int>> a) {
+template <typename T>
+pair<T, vector<char>> grid_max_path_restore(vector<vector<T>> a) {
     int n = a.size(), m = a[0].size();
     vector<vector<char>> p(n, vector<char>(m));
     for (int i = 1; i < m; i++) {

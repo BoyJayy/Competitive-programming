@@ -1,4 +1,5 @@
-vector<vector<long long>> floyd_warshall(vector<vector<long long>> d) {
+template <typename T>
+vector<vector<T>> floyd_warshall(vector<vector<T>> d) {
     int n = d.size();
     for (int k = 0; k < n; k++) {
         for (int i = 0; i < n; i++) {

@@ -1,52 +1,54 @@
-struct ST {
-    int n;
-    vec<vec<ll>> stMin, stMax, stGcd, stAnd, stOr;
-    vec<int> lg;
-    ST(const vec<ll>& a) {
+template <typename T>
+struct SparseTableMulti {
+    int n, K;
+    vector<vector<T>> mn, mx, gc, band, bor;
+    vector<int> lg;
+
+    SparseTableMulti(const vector<T>& a) {
         n = a.size();
-        lg.resize(n + 1);
-        for (int i = 2; i <= n; i++)
-            lg[i] = lg[i / 2] + 1;
-        int K = lg[n] + 1;
-        stMin.assign(n, vec<ll>(K));
-        stMax.assign(n, vec<ll>(K));
-        stGcd.assign(n, vec<ll>(K));
-        stAnd.assign(n, vec<ll>(K));
-        stOr.assign(n, vec<ll>(K));
-        for (int i = 0; i < n; i++){
-            stMin[i][0] = a[i];
-            stMax[i][0] = a[i];
-            stGcd[i][0] = a[i];
-            stAnd[i][0] = a[i];
-            stOr[i][0] = a[i];
-        }
-        for (int j = 1; j < K; j++)
-            for (int i = 0; i + (1 << j) <= n; i++){
-                stMin[i][j] = min(stMin[i][j - 1], stMin[i + (1 << (j - 1))][j - 1]);
-                stMax[i][j] = max(stMax[i][j - 1], stMax[i + (1 << (j - 1))][j - 1]);
-                stGcd[i][j] = gcd(stGcd[i][j - 1], stGcd[i + (1 << (j - 1))][j - 1]);
-                stAnd[i][j] = stAnd[i][j - 1] & stAnd[i + (1 << (j - 1))][j - 1];
-                stOr[i][j] = stOr[i][j - 1] | stOr[i + (1 << (j - 1))][j - 1];
+        lg.assign(n + 1, 0);
+        for (int i = 2; i <= n; i++) lg[i] = lg[i / 2] + 1;
+        K = lg[n] + 1;
+        mn.assign(K, vector<T>(n));
+        mx.assign(K, vector<T>(n));
+        gc.assign(K, vector<T>(n));
+        band.assign(K, vector<T>(n));
+        bor.assign(K, vector<T>(n));
+        mn[0] = mx[0] = gc[0] = band[0] = bor[0] = a;
+        for (int j = 1; j < K; j++) {
+            for (int i = 0; i + (1 << j) <= n; i++) {
+                int to = i + (1 << (j - 1));
+                mn[j][i] = min(mn[j - 1][i], mn[j - 1][to]);
+                mx[j][i] = max(mx[j - 1][i], mx[j - 1][to]);
+                gc[j][i] = gcd(gc[j - 1][i], gc[j - 1][to]);
+                band[j][i] = band[j - 1][i] & band[j - 1][to];
+                bor[j][i] = bor[j - 1][i] | bor[j - 1][to];
             }
+        }
     }
-    ll getmin(int L, int R) {
-        int j = lg[R - L + 1];
-        return min(stMin[L][j], stMin[R - (1 << j) + 1][j]);
+
+    T get_min(int l, int r) {
+        int j = lg[r - l + 1];
+        return min(mn[j][l], mn[j][r - (1 << j) + 1]);
     }
-    ll getmax(int L, int R) {
-        int j = lg[R - L + 1];
-        return max(stMax[L][j], stMax[R - (1 << j) + 1][j]);
+
+    T get_max(int l, int r) {
+        int j = lg[r - l + 1];
+        return max(mx[j][l], mx[j][r - (1 << j) + 1]);
     }
-    ll getgcd(int L, int R) {
-        int j = lg[R - L + 1];
-        return gcd(stGcd[L][j], stGcd[R - (1 << j) + 1][j]);
+
+    T get_gcd(int l, int r) {
+        int j = lg[r - l + 1];
+        return gcd(gc[j][l], gc[j][r - (1 << j) + 1]);
     }
-    ll getand(int L, int R) {
-        int j = lg[R - L + 1];
-        return stAnd[L][j] & stAnd[R - (1 << j) + 1][j];
+
+    T get_and(int l, int r) {
+        int j = lg[r - l + 1];
+        return band[j][l] & band[j][r - (1 << j) + 1];
     }
-    ll getor(int L, int R) {
-        int j = lg[R - L + 1];
-        return stOr[L][j] | stOr[R - (1 << j) + 1][j];
+
+    T get_or(int l, int r) {
+        int j = lg[r - l + 1];
+        return bor[j][l] | bor[j][r - (1 << j) + 1];
     }
 };

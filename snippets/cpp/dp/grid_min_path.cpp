@@ -1,4 +1,5 @@
-int grid_min_path(vector<vector<int>> a) {
+template <typename T>
+T grid_min_path(vector<vector<T>> a) {
     int n = a.size(), m = a[0].size();
     for (int i = 1; i < m; i++) a[0][i] += a[0][i - 1];
     for (int i = 1; i < n; i++) {

@@ -1,20 +1,21 @@
+template <typename T>
 struct Fenw {
     int n;
-    vector<ll> fenw;
-    Fenw(int n): n(n) {
-        fenw.assign(n+1, 0);
+    vector<T> t;
+
+    Fenw(int n = 0): n(n), t(n + 1) {}
+
+    void add(int i, T x) {
+        for (++i; i <= n; i += i & -i) t[i] += x;
     }
-    void update(int i, ll delta) {
-        for(++i; i <= n; i += i & -i)
-            fenw[i] = (fenw[i] + delta) % MOD;
+
+    T sum(int i) {
+        T ans = 0;
+        for (++i; i > 0; i -= i & -i) ans += t[i];
+        return ans;
     }
-    ll sum(int i) {
-        ll res = 0;
-        for(++i; i > 0; i -= i & -i)
-            res = (res + fenw[i]) % MOD;
-        return res;
-    }
-    ll query(int l, int r) {
-        return (sum(r) - (l ? sum(l-1) : 0) + MOD) % MOD;
+
+    T query(int l, int r) {
+        return sum(r) - (l ? sum(l - 1) : 0);
     }
 };

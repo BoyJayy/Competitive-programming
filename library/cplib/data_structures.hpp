@@ -78,27 +78,28 @@ struct RollbackDSU {
     }
 };
 
+template <typename T = long long>
 struct Fenwick {
     int n;
-    std::vector<long long> t;
+    std::vector<T> t;
 
     Fenwick(int n = 0): n(n), t(n + 1) {}
 
-    void add(int i, long long x) {
+    void add(int i, T x) {
         for (++i; i <= n; i += i & -i) t[i] += x;
     }
 
-    long long sum(int i) {
-        long long res = 0;
+    T sum(int i) {
+        T res = 0;
         for (++i; i > 0; i -= i & -i) res += t[i];
         return res;
     }
 
-    long long query(int l, int r) {
+    T query(int l, int r) {
         return sum(r) - (l ? sum(l - 1) : 0);
     }
 
-    int lower_bound(long long s) {
+    int lower_bound(T s) {
         int pos = 0;
         int pw = 1;
         while ((pw << 1) <= n) pw <<= 1;
@@ -113,39 +114,41 @@ struct Fenwick {
     }
 };
 
+template <typename T = long long>
 struct FenwickRange {
     int n;
-    Fenwick a, b;
+    Fenwick<T> a, b;
 
     FenwickRange(int n = 0): n(n), a(n), b(n) {}
 
-    void add_pref(Fenwick& f, int i, long long x) {
+    void add_pref(Fenwick<T>& f, int i, T x) {
         if (i >= 0) f.add(i, x);
     }
 
-    void add(int l, int r, long long x) {
+    void add(int l, int r, T x) {
         add_pref(a, l, x);
         if (r + 1 < n) add_pref(a, r + 1, -x);
         add_pref(b, l, x * l);
         if (r + 1 < n) add_pref(b, r + 1, -x * (r + 1));
     }
 
-    long long pref(int i) {
+    T pref(int i) {
         return a.sum(i) * (i + 1) - b.sum(i);
     }
 
-    long long sum(int l, int r) {
+    T sum(int l, int r) {
         return pref(r) - (l ? pref(l - 1) : 0);
     }
 };
 
+template <typename T = long long>
 struct SegTree {
     int n;
-    std::vector<long long> t;
+    std::vector<T> t;
 
     SegTree(int n = 0): n(n), t(4 * n) {}
 
-    void build(const std::vector<int>& a, int v, int l, int r) {
+    void build(const std::vector<T>& a, int v, int l, int r) {
         if (l == r) {
             t[v] = a[l];
             return;
@@ -156,7 +159,7 @@ struct SegTree {
         t[v] = t[v * 2] + t[v * 2 + 1];
     }
 
-    void upd(int v, int l, int r, int pos, long long x) {
+    void upd(int v, int l, int r, int pos, T x) {
         if (l == r) {
             t[v] = x;
             return;
@@ -167,7 +170,7 @@ struct SegTree {
         t[v] = t[v * 2] + t[v * 2 + 1];
     }
 
-    long long get(int v, int l, int r, int ql, int qr) {
+    T get(int v, int l, int r, int ql, int qr) {
         if (ql > r || qr < l) return 0;
         if (ql <= l && r <= qr) return t[v];
         int m = (l + r) / 2;
@@ -175,15 +178,16 @@ struct SegTree {
     }
 };
 
+template <typename T = int>
 struct SparseTable {
     int n, lg;
-    std::vector<std::vector<int>> st;
+    std::vector<std::vector<T>> st;
     std::vector<int> p;
 
-    SparseTable(const std::vector<int>& a) {
+    SparseTable(const std::vector<T>& a) {
         n = a.size();
         lg = 32 - __builtin_clz(n);
-        st.assign(lg, std::vector<int>(n));
+        st.assign(lg, std::vector<T>(n));
         p.assign(n + 1, 0);
         st[0] = a;
         for (int i = 2; i <= n; i++) p[i] = p[i / 2] + 1;
@@ -194,7 +198,7 @@ struct SparseTable {
         }
     }
 
-    int get(int l, int r) {
+    T get(int l, int r) {
         int j = p[r - l + 1];
         return std::min(st[j][l], st[j][r - (1 << j) + 1]);
     }
@@ -225,17 +229,18 @@ struct SparseTableGeneric {
     }
 };
 
+template <typename T = long long>
 struct LazySegTree {
     int n;
-    std::vector<long long> t, lazy;
+    std::vector<T> t, lazy;
 
     LazySegTree(int n = 0): n(n), t(4 * n), lazy(4 * n) {}
 
-    LazySegTree(const std::vector<long long>& a): LazySegTree((int)a.size()) {
+    LazySegTree(const std::vector<T>& a): LazySegTree((int)a.size()) {
         build(a, 1, 0, n - 1);
     }
 
-    void build(const std::vector<long long>& a, int v, int l, int r) {
+    void build(const std::vector<T>& a, int v, int l, int r) {
         if (l == r) {
             t[v] = a[l];
             return;
@@ -254,12 +259,12 @@ struct LazySegTree {
         lazy[v] = 0;
     }
 
-    void add_node(int v, int l, int r, long long x) {
+    void add_node(int v, int l, int r, T x) {
         t[v] += x * (r - l + 1);
         lazy[v] += x;
     }
 
-    void add(int v, int l, int r, int ql, int qr, long long x) {
+    void add(int v, int l, int r, int ql, int qr, T x) {
         if (ql > r || qr < l) return;
         if (ql <= l && r <= qr) {
             add_node(v, l, r, x);
@@ -272,7 +277,7 @@ struct LazySegTree {
         t[v] = t[v * 2] + t[v * 2 + 1];
     }
 
-    long long sum(int v, int l, int r, int ql, int qr) {
+    T sum(int v, int l, int r, int ql, int qr) {
         if (ql > r || qr < l) return 0;
         if (ql <= l && r <= qr) return t[v];
         push(v, l, r);
@@ -317,35 +322,36 @@ struct KthZeroTree {
     }
 };
 
+template <typename T = int>
 struct SegTreeMaxCount {
     int n;
-    std::vector<std::pair<int, int>> t;
+    std::vector<std::pair<T, int>> t;
 
-    SegTreeMaxCount(const std::vector<int>& a = {}) {
+    SegTreeMaxCount(const std::vector<T>& a = {}) {
         if (!a.empty()) build(a);
     }
 
-    std::pair<int, int> merge(std::pair<int, int> a, std::pair<int, int> b) {
+    std::pair<T, int> merge(std::pair<T, int> a, std::pair<T, int> b) {
         if (a.first == b.first) return {a.first, a.second + b.second};
         return a.first > b.first ? a : b;
     }
 
-    void build(const std::vector<int>& a) {
+    void build(const std::vector<T>& a) {
         n = 1;
         while (n < (int)a.size()) n <<= 1;
-        t.assign(2 * n, {-1000000000, 0});
+        t.assign(2 * n, {std::numeric_limits<T>::lowest(), 0});
         for (int i = 0; i < (int)a.size(); i++) t[i + n] = {a[i], 1};
         for (int i = n - 1; i; i--) t[i] = merge(t[i << 1], t[i << 1 | 1]);
     }
 
-    void set_val(int pos, int x) {
+    void set_val(int pos, T x) {
         pos += n;
         t[pos] = {x, 1};
         for (pos >>= 1; pos; pos >>= 1) t[pos] = merge(t[pos << 1], t[pos << 1 | 1]);
     }
 
-    std::pair<int, int> get(int l, int r) {
-        std::pair<int, int> L = {-1000000000, 0}, R = {-1000000000, 0};
+    std::pair<T, int> get(int l, int r) {
+        std::pair<T, int> L = {std::numeric_limits<T>::lowest(), 0}, R = {std::numeric_limits<T>::lowest(), 0};
         for (l += n, r += n + 1; l < r; l >>= 1, r >>= 1) {
             if (l & 1) L = merge(L, t[l++]);
             if (r & 1) R = merge(t[--r], R);
@@ -354,11 +360,12 @@ struct SegTreeMaxCount {
     }
 };
 
+template <typename T = long long>
 struct LiChao {
     struct Line {
-        long long k, b;
+        T k, b;
 
-        long long get(long long x) const {
+        T get(T x) const {
             return k * x + b;
         }
     };
@@ -370,21 +377,21 @@ struct LiChao {
         Node(Line line): line(line), l(nullptr), r(nullptr) {}
     };
 
-    long long L, R;
+    T L, R;
     Node* root = nullptr;
 
-    LiChao(long long L, long long R): L(L), R(R) {}
+    LiChao(T L, T R): L(L), R(R) {}
 
     void add_line(Line nw) {
         add_line(root, L, R, nw);
     }
 
-    void add_line(Node*& v, long long l, long long r, Line nw) {
+    void add_line(Node*& v, T l, T r, Line nw) {
         if (!v) {
             v = new Node(nw);
             return;
         }
-        long long m = (l + r) / 2;
+        T m = (l + r) / 2;
         bool lef = nw.get(l) < v->line.get(l);
         bool mid = nw.get(m) < v->line.get(m);
         if (mid) std::swap(nw, v->line);
@@ -393,37 +400,38 @@ struct LiChao {
         else add_line(v->r, m + 1, r, nw);
     }
 
-    void add_segment(Line nw, long long ql, long long qr) {
+    void add_segment(Line nw, T ql, T qr) {
         add_segment(root, L, R, nw, ql, qr);
     }
 
-    void add_segment(Node*& v, long long l, long long r, Line nw, long long ql, long long qr) {
+    void add_segment(Node*& v, T l, T r, Line nw, T ql, T qr) {
         if (ql > r || qr < l) return;
         if (ql <= l && r <= qr) {
             add_line(v, l, r, nw);
             return;
         }
-        if (!v) v = new Node({0, (long long)4e18});
-        long long m = (l + r) / 2;
+        if (!v) v = new Node({0, std::numeric_limits<T>::max() / 4});
+        T m = (l + r) / 2;
         add_segment(v->l, l, m, nw, ql, qr);
         add_segment(v->r, m + 1, r, nw, ql, qr);
     }
 
-    long long get(long long x) {
+    T get(T x) {
         return get(root, L, R, x);
     }
 
-    long long get(Node* v, long long l, long long r, long long x) {
-        if (!v) return (long long)4e18;
-        long long ans = v->line.get(x);
+    T get(Node* v, T l, T r, T x) {
+        if (!v) return std::numeric_limits<T>::max() / 4;
+        T ans = v->line.get(x);
         if (l == r) return ans;
-        long long m = (l + r) / 2;
+        T m = (l + r) / 2;
         if (x <= m) return std::min(ans, get(v->l, l, m, x));
         return std::min(ans, get(v->r, m + 1, r, x));
     }
 };
 
-std::vector<int> previous_less(const std::vector<int>& a) {
+template <typename T>
+std::vector<int> previous_less(const std::vector<T>& a) {
     int n = a.size();
     std::vector<int> ans(n, -1), st;
     for (int i = 0; i < n; i++) {
@@ -434,10 +442,11 @@ std::vector<int> previous_less(const std::vector<int>& a) {
     return ans;
 }
 
-std::vector<int> window_min(const std::vector<int>& a, int k) {
+template <typename T>
+std::vector<T> window_min(const std::vector<T>& a, int k) {
     int n = a.size();
     std::deque<int> q;
-    std::vector<int> ans;
+    std::vector<T> ans;
     for (int i = 0; i < n; i++) {
         while (!q.empty() && q.front() <= i - k) q.pop_front();
         while (!q.empty() && a[q.back()] >= a[i]) q.pop_back();

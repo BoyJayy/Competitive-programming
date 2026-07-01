@@ -1,5 +1,13 @@
-nod = gcd(a,b);
+template <typename T>
+T gcd_val(T a, T b) {
+    while (b) {
+        a %= b;
+        swap(a, b);
+    }
+    return a;
+}
 
-nok = a * b / nod;
-
-// есть расширенные алгосы евклида которые я не прописывал конечно
+template <typename T>
+T lcm_val(T a, T b) {
+    return a / gcd_val(a, b) * b;
+}

@@ -1,14 +1,21 @@
-using V1 = vector<long long>;
-using V2 = vector<V1>;
-using V3 = vector<V2>;
-using V4 = vector<V3>;
-using V5 = vector<V4>;
+template <typename T>
+using V1 = vector<T>;
+template <typename T>
+using V2 = vector<V1<T>>;
+template <typename T>
+using V3 = vector<V2<T>>;
+template <typename T>
+using V4 = vector<V3<T>>;
+template <typename T>
+using V5 = vector<V4<T>>;
 
-V5 make_5d(int a, int b, int c, int d, int e, long long val = 0) {
-    return V5(a, V4(b, V3(c, V2(d, V1(e, val)))));
+template <typename T>
+V5<T> make_5d(int a, int b, int c, int d, int e, T val = 0) {
+    return V5<T>(a, V4<T>(b, V3<T>(c, V2<T>(d, V1<T>(e, val)))));
 }
 
-void build_5d_prefix(const V5& a, V5& pref, int n1, int n2, int n3, int n4, int n5) {
+template <typename T>
+void build_5d_prefix(const V5<T>& a, V5<T>& pref, int n1, int n2, int n3, int n4, int n5) {
     for (int i1 = 0; i1 < n1; i1++)
         for (int i2 = 0; i2 < n2; i2++)
             for (int i3 = 0; i3 < n3; i3++)
@@ -52,9 +59,10 @@ void build_5d_prefix(const V5& a, V5& pref, int n1, int n2, int n3, int n4, int 
                         pref[i1][i2][i3][i4][i5] += pref[i1][i2][i3][i4][i5 - 1];
 }
 
-long long sum_5d(const V5& pref, int l1, int l2, int l3, int l4, int l5,
-                 int r1, int r2, int r3, int r4, int r5) {
-    long long ans = 0;
+template <typename T>
+T sum_5d(const V5<T>& pref, int l1, int l2, int l3, int l4, int l5,
+         int r1, int r2, int r3, int r4, int r5) {
+    T ans = 0;
     for (int mask = 0; mask < 32; mask++) {
         int i1 = (mask & 1) ? l1 : r1 + 1;
         int i2 = (mask & 2) ? l2 : r2 + 1;

@@ -23,10 +23,11 @@ struct DSU {
     }
 };
 
-long long kruskal(int n, vector<array<int, 3>> rb) {
+template <typename T>
+T kruskal(int n, vector<tuple<T, int, int>> rb) {
     sort(rb.begin(), rb.end());
     DSU dsu(n);
-    long long ans = 0;
+    T ans = 0;
     for (auto [w, u, v] : rb) {
         if (dsu.unite(u, v)) ans += w;
     }

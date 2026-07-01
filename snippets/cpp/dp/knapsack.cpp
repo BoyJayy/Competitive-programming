@@ -1,20 +1,25 @@
-int n, Wmax;
-vector<vector<int>> g;
-vector<int> w, v;
-vector<vector<ll>> dp;
+template <typename T>
+vector<T> tree_knapsack(const vector<vector<int>>& g, const vector<int>& w, const vector<T>& val, int W, int root = 0) {
+    int n = g.size();
+    T neg = numeric_limits<T>::lowest() / 4;
+    vector dp(n, vector<T>(W + 1, neg));
 
-void dfs(int vtx, int p){
-    dp[vtx].assign(Wmax+1, - (ll)4e18);
-    for(int w0=0; w0<=Wmax; ++w0) dp[vtx][w0] = (w0>=w[vtx]? v[vtx] : -(ll)4e18);
-    for(int to: g[vtx]) if(to!=p){
-        dfs(to, vtx);
-        vector<ll> ndp(Wmax+1, -(ll)4e18);
-        for(int W=0; W<=Wmax; ++W){
-            if(dp[vtx][W] < -(ll)3e18) continue;
-            for(int x=0; x+W<=Wmax; ++x){
-                ndp[W+x] = max(ndp[W+x], dp[vtx][W] + max(0LL, dp[to][x]));
+    function<void(int, int)> dfs = [&](int v, int p) {
+        for (int cur = w[v]; cur <= W; cur++) dp[v][cur] = val[v];
+        for (int to : g[v]) {
+            if (to == p) continue;
+            dfs(to, v);
+            vector<T> ndp(W + 1, neg);
+            for (int cur = 0; cur <= W; cur++) {
+                if (dp[v][cur] == neg) continue;
+                for (int take = 0; cur + take <= W; take++) {
+                    ndp[cur + take] = max(ndp[cur + take], dp[v][cur] + max(T(), dp[to][take]));
+                }
             }
+            dp[v].swap(ndp);
         }
-        dp[vtx].swap(ndp);
-    }
+    };
+
+    dfs(root, -1);
+    return dp[root];
 }

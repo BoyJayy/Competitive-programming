@@ -2,66 +2,75 @@
 
 namespace cplib {
 
-struct Point {
-    long double x, y;
+template <typename T>
+struct PointT {
+    T x, y;
 
-    Point operator + (Point p) const {
+    PointT operator + (PointT p) const {
         return {x + p.x, y + p.y};
     }
 
-    Point operator - (Point p) const {
+    PointT operator - (PointT p) const {
         return {x - p.x, y - p.y};
     }
 
-    Point operator * (long double k) const {
+    PointT operator * (T k) const {
         return {x * k, y * k};
     }
 };
 
-long double dot(Point a, Point b) {
+using Point = PointT<long double>;
+using IPoint = PointT<long long>;
+
+template <typename T>
+T dot(PointT<T> a, PointT<T> b) {
     return a.x * b.x + a.y * b.y;
 }
 
-long double cross(Point a, Point b) {
+template <typename T>
+T cross(PointT<T> a, PointT<T> b) {
     return a.x * b.y - a.y * b.x;
 }
 
-long double dist(Point a, Point b) {
+template <typename T>
+T cross(PointT<T> a, PointT<T> b, PointT<T> c) {
+    return cross(b - a, c - a);
+}
+
+template <typename T>
+long double dist(PointT<T> a, PointT<T> b) {
     long double dx = a.x - b.x, dy = a.y - b.y;
     return std::sqrt(dx * dx + dy * dy);
 }
 
-long double norm(Point a) {
-    return std::sqrt(dot(a, a));
+template <typename T>
+long double norm(PointT<T> a) {
+    return std::sqrt((long double)dot(a, a));
 }
 
-long double dist_line(Point a, Point b, Point p) {
-    return std::abs(cross(b - a, p - a)) / norm(b - a);
+template <typename T>
+long double dist_line(PointT<T> a, PointT<T> b, PointT<T> p) {
+    return std::abs((long double)cross(b - a, p - a)) / norm(b - a);
 }
 
-long double dist_segment(Point a, Point b, Point p) {
+template <typename T>
+long double dist_segment(PointT<T> a, PointT<T> b, PointT<T> p) {
     if (dot(p - a, b - a) < 0) return dist(p, a);
     if (dot(p - b, a - b) < 0) return dist(p, b);
     return dist_line(a, b, p);
 }
 
-struct IPoint {
-    long long x, y;
-};
-
-long long cross(IPoint a, IPoint b, IPoint c) {
-    return (b.x - a.x) * (c.y - a.y) - (b.y - a.y) * (c.x - a.x);
-}
-
-bool on_segment(IPoint a, IPoint b, IPoint p) {
+template <typename T>
+bool on_segment(PointT<T> a, PointT<T> b, PointT<T> p) {
     return cross(a, b, p) == 0 &&
            std::min(a.x, b.x) <= p.x && p.x <= std::max(a.x, b.x) &&
            std::min(a.y, b.y) <= p.y && p.y <= std::max(a.y, b.y);
 }
 
-bool intersect(IPoint a, IPoint b, IPoint c, IPoint d) {
-    long long c1 = cross(a, b, c), c2 = cross(a, b, d);
-    long long c3 = cross(c, d, a), c4 = cross(c, d, b);
+template <typename T>
+bool intersect(PointT<T> a, PointT<T> b, PointT<T> c, PointT<T> d) {
+    T c1 = cross(a, b, c), c2 = cross(a, b, d);
+    T c3 = cross(c, d, a), c4 = cross(c, d, b);
     if (c1 == 0 && on_segment(a, b, c)) return true;
     if (c2 == 0 && on_segment(a, b, d)) return true;
     if (c3 == 0 && on_segment(c, d, a)) return true;
@@ -69,32 +78,34 @@ bool intersect(IPoint a, IPoint b, IPoint c, IPoint d) {
     return (c1 > 0) != (c2 > 0) && (c3 > 0) != (c4 > 0);
 }
 
-long long doubled_area(const std::vector<IPoint>& p) {
+template <typename T>
+T doubled_area(const std::vector<PointT<T>>& p) {
     int n = p.size();
-    long long s = 0;
+    T s = 0;
     for (int i = 0; i < n; i++) {
-        IPoint a = p[i], b = p[(i + 1) % n];
+        auto a = p[i], b = p[(i + 1) % n];
         s += a.x * b.y - a.y * b.x;
     }
-    return std::abs(s);
+    return s < 0 ? -s : s;
 }
 
-std::vector<IPoint> convex_hull(std::vector<IPoint> p) {
-    std::sort(p.begin(), p.end(), [](IPoint a, IPoint b) {
+template <typename T>
+std::vector<PointT<T>> convex_hull(std::vector<PointT<T>> p) {
+    std::sort(p.begin(), p.end(), [](auto a, auto b) {
         return a.x == b.x ? a.y < b.y : a.x < b.x;
     });
-    p.erase(std::unique(p.begin(), p.end(), [](IPoint a, IPoint b) {
+    p.erase(std::unique(p.begin(), p.end(), [](auto a, auto b) {
         return a.x == b.x && a.y == b.y;
     }), p.end());
     if ((int)p.size() <= 1) return p;
-    std::vector<IPoint> h;
-    for (IPoint x : p) {
+    std::vector<PointT<T>> h;
+    for (auto x : p) {
         while ((int)h.size() >= 2 && cross(h[(int)h.size() - 2], h.back(), x) <= 0) h.pop_back();
         h.push_back(x);
     }
     int lower = h.size();
     for (int i = (int)p.size() - 2; i >= 0; i--) {
-        IPoint x = p[i];
+        auto x = p[i];
         while ((int)h.size() > lower && cross(h[(int)h.size() - 2], h.back(), x) <= 0) h.pop_back();
         h.push_back(x);
     }
@@ -102,7 +113,8 @@ std::vector<IPoint> convex_hull(std::vector<IPoint> p) {
     return h;
 }
 
-int point_in_polygon(const std::vector<IPoint>& p, IPoint q) {
+template <typename T>
+int point_in_polygon(const std::vector<PointT<T>>& p, PointT<T> q) {
     bool in = false;
     int n = p.size();
     for (int i = 0, j = n - 1; i < n; j = i++) {
