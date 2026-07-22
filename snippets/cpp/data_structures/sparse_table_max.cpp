@@ -11,7 +11,7 @@ struct ST{
         if (!n) return;
         st[0]=a;
         for (int i=1; i<h;i++) {
-            for (int j=0; j+(1<<i)<=n;j++) {
+            for (int j=0; j+(1<<i)<=n;j++)
                 st[i][j]=max(st[i-1][j], st[i-1][j+(1<<(i-1))]);
         }
     }
