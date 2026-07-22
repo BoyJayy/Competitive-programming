@@ -1,4 +1,3 @@
-template <typename T>
 struct SegTreeGCD {
     vec<int> nodes;
     int size = 1;
