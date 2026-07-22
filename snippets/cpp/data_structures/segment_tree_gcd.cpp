@@ -1,8 +1,8 @@
 struct SegTreeGCD {
     vec<int> nodes;
     int size = 1;
-    Tree(){};
-    Tree (vec<int>& a) {
+    SegTreeGCD(){};
+    SegTreeGCD (vec<int>& a) {
         while (size < a.size()) size *= 2;
         nodes.resize(size * 2, 0);
         for (int i = 0; i < a.size(); i++) {
